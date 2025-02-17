@@ -5,67 +5,95 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DecathlonUI {
     private static final String APP_TITLE = "Decathlon";
     private static final int WINDOW_WIDTH = 512;
     private static final int WINDOW_HEIGHT = 1024;
-    private static final int MARGIN_LEFT = 20;
-    private static final int MARGIN_TOP = 10;
-    private static final int MARGIN_Y = 10;
     private static final int IMAGE_SIZE = 80;
     private static final String FONT_NAME = "Trebuchet MS";
 
+    private static final String PATH_TO_RUNNER = "/images/runner.png";
+    private static final String[] IMAGE_PATHS = {PATH_TO_RUNNER,
+                                                "/images/long-jump.png",
+                                                "/images/shot-put.png",
+                                                "/images/high-jump.png",
+                                                PATH_TO_RUNNER,
+                                                "/images/hurdles.png",
+                                                "/images/discus.png",
+                                                "/images/pole-vault.png",
+                                                "/images/javelin.png",
+                                                PATH_TO_RUNNER};
+
     public DecathlonUI() throws IOException{
+        // Create window with GridBagLayout
         JFrame window = new JFrame(APP_TITLE);
         window.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+        window.setLayout(new GridBagLayout());
+        GridBagConstraints constr = new GridBagConstraints();
+        // Center window on screen
         window.setLocationRelativeTo(null);
 
-        JLabel title = new JLabel(APP_TITLE, SwingConstants.CENTER);
-        title.setBounds(MARGIN_LEFT, MARGIN_TOP, (WINDOW_WIDTH - 2 * MARGIN_LEFT), 24);
+        // Create and add a title
+        // Create title
+        JLabel title = new JLabel(APP_TITLE);
         title.setBackground(Color.WHITE);
         title.setFont(new Font(FONT_NAME, Font.BOLD, 20));
-        window.add(title);
+        title.setHorizontalAlignment(SwingConstants.CENTER);
+        // Position on the grid
+        constr.gridx = 0;
+        constr.gridy = 0;
+        // Spanning over all columns
+        constr.gridwidth = 5;
+        // Adding to window
+        window.add(title, constr);
 
-        JPanel icons = new JPanel();
-        icons.setLayout(new BoxLayout(icons, BoxLayout.PAGE_AXIS));
-        icons.setBounds(MARGIN_LEFT, MARGIN_TOP + title.getHeight() + MARGIN_Y, 50, WINDOW_HEIGHT - (MARGIN_TOP + title.getHeight() + MARGIN_Y));
-        icons.setBorder(BorderFactory.createEmptyBorder(MARGIN_TOP + title.getHeight() + 2 * MARGIN_Y + IMAGE_SIZE / 2, MARGIN_LEFT,MARGIN_TOP,WINDOW_WIDTH - 2* MARGIN_LEFT - IMAGE_SIZE));
 
-        final String pathToRunner = "/images/runner.png";
+        // Create a map containing all the icons
+        Map<Integer, JLabel> iconMap = new HashMap<>();
+        for (int i = 0; i < IMAGE_PATHS.length; i++){
+            BufferedImage a = ImageIO.read(getClass().getResourceAsStream(IMAGE_PATHS[i]));
+            ImageIcon b = new ImageIcon(a);
+            JLabel c = new JLabel(b);
+            iconMap.put(i, c);
+        }
 
-        BufferedImage imgRunning100 = ImageIO.read(getClass().getResourceAsStream(pathToRunner));
-        BufferedImage imgRunning400 = ImageIO.read(getClass().getResourceAsStream(pathToRunner));
-        BufferedImage imgRunning1500 = ImageIO.read(getClass().getResourceAsStream(pathToRunner));
-        BufferedImage imgLongJump = ImageIO.read(getClass().getResourceAsStream("/images/long-jump.png"));
-        BufferedImage imgShotPut = ImageIO.read(getClass().getResourceAsStream("/images/shot-put.png"));
-        BufferedImage imgHighJump = ImageIO.read(getClass().getResourceAsStream("/images/high-jump.png"));
-        BufferedImage imgHurdles = ImageIO.read(getClass().getResourceAsStream("/images/hurdles.png"));
-        BufferedImage imgDiscus = ImageIO.read(getClass().getResourceAsStream("/images/discus.png"));
-        BufferedImage imgPoleVault = ImageIO.read(getClass().getResourceAsStream("/images/pole-vault.png"));
-        BufferedImage imgJavelin = ImageIO.read(getClass().getResourceAsStream("/images/javelin.png"));
+        // Create a map containing all point fields
+        Map<Integer, JTextField> pointsMap = new HashMap<>();
+        for (int i = 0; i < IMAGE_PATHS.length; i++){
+            // Create four player columns
+            for (int j = 0; j < 40; j += 10){
+                JTextField a = new JTextField(String.valueOf(i));
+                a.setFont(new Font(FONT_NAME, Font.PLAIN, 25));
+                a.setHorizontalAlignment(SwingConstants.CENTER);
+                a.setEditable(false);
+                pointsMap.put(i + j, a);
+            }
+        }
 
-        icons.add(new JLabel(new ImageIcon(imgRunning100)));
-        icons.add(Box.createVerticalStrut(5));
-        icons.add(new JLabel(new ImageIcon(imgLongJump)));
-        icons.add(Box.createVerticalStrut(5));
-        icons.add(new JLabel(new ImageIcon(imgShotPut)));
-        icons.add(Box.createVerticalStrut(5));
-        icons.add(new JLabel(new ImageIcon(imgHighJump)));
-        icons.add(Box.createVerticalStrut(5));
-        icons.add(new JLabel(new ImageIcon(imgRunning400)));
-        icons.add(Box.createVerticalStrut(5));
-        icons.add(new JLabel(new ImageIcon(imgHurdles)));
-        icons.add(Box.createVerticalStrut(5));
-        icons.add(new JLabel(new ImageIcon(imgDiscus)));
-        icons.add(Box.createVerticalStrut(5));
-        icons.add(new JLabel(new ImageIcon(imgPoleVault)));
-        icons.add(Box.createVerticalStrut(5));
-        icons.add(new JLabel(new ImageIcon(imgJavelin)));
-        icons.add(Box.createVerticalStrut(5));
-        icons.add(new JLabel(new ImageIcon(imgRunning1500)));
+        // Set spacing
+        constr.insets = new Insets(10, 0, 0, 5);
+        constr.gridwidth = 1;
 
-        window.add(icons);
+        for (int i = 0; i < IMAGE_PATHS.length; i++){
+            // Add icons to the window
+            JLabel icon = iconMap.get(i);
+            constr.gridx = 0;
+            constr.gridy = i + 2;
+            constr.ipadx = 0;
+            window.add(icon, constr);
+
+            for (int j = 0; j < 40; j += 10){
+                // Add four columns of text to the window
+                JTextField text = pointsMap.get(i + j);
+                constr.gridx = j / 10 + 1;
+                constr.fill = GridBagConstraints.VERTICAL;
+                constr.ipadx = IMAGE_SIZE;
+                window.add(text, constr);
+            }
+        }
 
         window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         window.setVisible(true);
