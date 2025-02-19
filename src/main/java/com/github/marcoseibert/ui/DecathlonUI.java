@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DecathlonUI {
+public class DecathlonUI extends JFrame{
     private static final String APP_TITLE = "Decathlon";
     private static final int WINDOW_WIDTH = 512;
     private static final int WINDOW_HEIGHT = 1024;
@@ -29,12 +29,12 @@ public class DecathlonUI {
 
     public DecathlonUI() throws IOException{
         // Create window with GridBagLayout
-        JFrame window = new JFrame(APP_TITLE);
-        window.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-        window.setLayout(new GridBagLayout());
+        this.setTitle(APP_TITLE);
+        this.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+        this.setLayout(new GridBagLayout());
         GridBagConstraints constr = new GridBagConstraints();
         // Center window on screen
-        window.setLocationRelativeTo(null);
+        this.setLocationRelativeTo(null);
 
         // Create and add a title
         // Create title
@@ -48,8 +48,7 @@ public class DecathlonUI {
         // Spanning over all columns
         constr.gridwidth = 5;
         // Adding to window
-        window.add(title, constr);
-
+        this.add(title, constr);
 
         // Create a map containing all the icons
         Map<Integer, JLabel> iconMap = new HashMap<>();
@@ -83,7 +82,7 @@ public class DecathlonUI {
             constr.gridx = 0;
             constr.gridy = i + 2;
             constr.ipadx = 0;
-            window.add(icon, constr);
+            this.add(icon, constr);
 
             for (int j = 0; j < 40; j += 10){
                 // Add four columns of text to the window
@@ -91,12 +90,12 @@ public class DecathlonUI {
                 constr.gridx = j / 10 + 1;
                 constr.fill = GridBagConstraints.VERTICAL;
                 constr.ipadx = IMAGE_SIZE;
-                window.add(text, constr);
+                this.add(text, constr);
             }
         }
 
-        window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        window.setVisible(true);
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        this.setVisible(true);
     }
 
 }
