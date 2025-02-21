@@ -41,7 +41,7 @@ public class Die extends JLabel {
         for (long i=1; i < 20; i++){
             delay(25 * i, ()->incrementImage(frameProperty, animSprites));
         }
-        logger.info("Result of die {} is {}", this.getName(), result);
+        logger.info("Result of die is {}", result);
         delay(500, ()-> this.setIcon(resultIcon));
     }
 
