@@ -37,6 +37,7 @@ public class DecathlonUI extends JFrame {
             PATH_TO_RUNNER};
     public final Cursor cursorDown;
     public final Cursor cursorUp;
+    public int diceResult = 0;
 
 
     public DecathlonUI() {

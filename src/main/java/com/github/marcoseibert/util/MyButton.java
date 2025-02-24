@@ -5,9 +5,9 @@ import com.github.marcoseibert.ui.DecathlonUI;
 import javax.swing.*;
 import java.awt.event.*;
 
-public class MyButton extends JButton {
+public abstract class MyButton extends JButton {
 
-    public MyButton(DecathlonUI frame){
+    protected MyButton(DecathlonUI frame){
         super.setText("");
         super.addMouseListener(new MouseAdapter() {
             @Override

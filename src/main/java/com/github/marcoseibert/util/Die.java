@@ -16,6 +16,7 @@ import java.util.*;
 public class Die extends JLabel {
     protected static final Logger logger = LogManager.getLogger(Die.class.getSimpleName());
     private final Random ran = new Random();
+    int value = 1;
 
     public Die() {
         BufferedImage dieSprite;
@@ -35,6 +36,7 @@ public class Die extends JLabel {
         Map<Integer, BufferedImage> animSprites = sprites.getLast();
 
         int result = ran.nextInt(6) + 1;
+        this.value = result;
         BufferedImage resultImage = resultSprites.get(result - 1);
         ImageIcon resultIcon = new ImageIcon(resultImage);
 
