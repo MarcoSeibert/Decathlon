@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 
-public class DecathlonUI extends JFrame {
-    protected static final Logger logger = LogManager.getLogger(DecathlonUI.class.getSimpleName());
+public class DecathlonUISwing extends JFrame {
+    protected static final Logger logger = LogManager.getLogger(DecathlonUISwing.class.getSimpleName());
     private static final String APP_TITLE = "Decathlon";
     private static final int WINDOW_WIDTH = 1024;
     private static final int WINDOW_HEIGHT = 1024;
@@ -40,7 +40,7 @@ public class DecathlonUI extends JFrame {
     public int diceResult = 0;
 
 
-    public DecathlonUI() {
+    public DecathlonUISwing() {
         // Create window with GridBagLayout
         this.setTitle(APP_TITLE);
         this.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);

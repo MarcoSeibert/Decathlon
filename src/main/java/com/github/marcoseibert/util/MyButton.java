@@ -1,13 +1,13 @@
 package com.github.marcoseibert.util;
 
-import com.github.marcoseibert.ui.DecathlonUI;
+import com.github.marcoseibert.ui.DecathlonUISwing;
 
 import javax.swing.*;
 import java.awt.event.*;
 
 public abstract class MyButton extends JButton {
 
-    protected MyButton(DecathlonUI frame){
+    protected MyButton(DecathlonUISwing frame){
         super.setText("");
         super.addMouseListener(new MouseAdapter() {
             @Override
