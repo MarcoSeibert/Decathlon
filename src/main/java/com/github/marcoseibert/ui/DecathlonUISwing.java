@@ -1,7 +1,7 @@
 package com.github.marcoseibert.ui;
 
-import com.github.marcoseibert.util.Die;
-import com.github.marcoseibert.util.RollButton;
+import com.github.marcoseibert.util.DieSwing;
+import com.github.marcoseibert.util.RollButtonSwing;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -121,9 +121,9 @@ public class DecathlonUISwing extends JFrame {
         }
 
         int nrOfDice = 8;
-        Map<Integer, Die> diceMap = new HashMap<>();
+        Map<Integer, DieSwing> diceMap = new HashMap<>();
         for (int i = 0; i < nrOfDice; i++) {
-            Die die = new Die();
+            DieSwing die = new DieSwing();
             constr.gridheight = 2;
             constr.gridx = i % 4 + 6;
             constr.gridy = (int) (2 + 2 * Math.floor((double) i / 4));
@@ -134,7 +134,7 @@ public class DecathlonUISwing extends JFrame {
         }
 
         List<Map<Integer, BufferedImage>> sprites = createSpriteMap();
-        RollButton rollButton = new RollButton(this, diceMap, sprites);
+        RollButtonSwing rollButton = new RollButtonSwing(this, diceMap, sprites);
         constr.gridheight = 1;
         constr.gridx = 6;
         constr.gridy = 1;

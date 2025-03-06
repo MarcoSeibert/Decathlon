@@ -13,12 +13,12 @@ import java.io.IOException;
 import java.util.*;
 
 
-public class Die extends JLabel {
-    protected static final Logger logger = LogManager.getLogger(Die.class.getSimpleName());
+public class DieSwing extends JLabel {
+    protected static final Logger logger = LogManager.getLogger(DieSwing.class.getSimpleName());
     private final Random ran = new Random();
     int value = 1;
 
-    public Die() {
+    public DieSwing() {
         BufferedImage dieSprite;
         try {
             dieSprite = ImageIO.read(getClass().getClassLoader().getResourceAsStream("images/die1.png"));

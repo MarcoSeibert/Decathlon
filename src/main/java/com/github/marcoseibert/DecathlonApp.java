@@ -9,6 +9,8 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
 import javafx.util.Duration;
@@ -18,11 +20,11 @@ import javafx.fxml.FXMLLoader;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class DecathlonApp extends Application {
     protected static final Logger logger = LogManager.getLogger(DecathlonApp.class.getSimpleName());
     public static int nrOfPlayers = 4;
+    public static int activeGame = 1;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -50,24 +52,40 @@ public class DecathlonApp extends Application {
             }
         }
 
-        Timeline setSumOfPoints = getTimeline(playerPointsMap);
-        setSumOfPoints.play();
+        Timeline backgroundTasks = getTimeline(scoreSheet, playerPointsMap);
+        backgroundTasks.play();
     }
 
-    private static Timeline getTimeline(HashMap<Integer, Map<Integer, TextField>> playerPointsMap) {
-        Timeline setSumOfPoints = new Timeline(new KeyFrame(Duration.seconds(1), actionEvent -> {
+    private static Timeline getTimeline(GridPane scoreSheet, HashMap<Integer, Map<Integer, TextField>> playerPointsMap) {
+        // Highlight on the first game
+        Rectangle highlightGame = new Rectangle();
+        highlightGame.setFill(Color.BLUEVIOLET);
+        highlightGame.setOpacity(0.25);
+        highlightGame.setHeight(64);
+        highlightGame.setWidth(64);
+        scoreSheet.add(highlightGame, 0, 2);
+        highlightGame.toBack();
+
+        Timeline backgroundTasks = new Timeline(new KeyFrame(Duration.seconds(1), actionEvent -> {
+            // Update the total score of the players
             for (int i = 0; i < nrOfPlayers; i++){
                 int totalScore = 0;
                 for (int j = 2; j < 12; j++){
-                    if (!Objects.equals(playerPointsMap.get(i + 1).get(j).getText(), "")) {
+                    try {
                         totalScore += Integer.parseInt(playerPointsMap.get(i + 1).get(j).getText());
+                    } catch (NumberFormatException e) {
+                        totalScore += 0;
                     }
                 }
                 playerPointsMap.get(i+1).get(12).setText(String.valueOf(totalScore));
             }
+
+            // Highlight on the active game
+            GridPane.setConstraints(highlightGame,0,activeGame + 1);
+
         }));
-        setSumOfPoints.setCycleCount(Animation.INDEFINITE);
-        return setSumOfPoints;
+        backgroundTasks.setCycleCount(Animation.INDEFINITE);
+        return backgroundTasks;
     }
 
     public static void main(String[] args) {

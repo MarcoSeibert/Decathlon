@@ -9,10 +9,10 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Map;
 
-public class RollButton extends MyButton {
-    protected static final Logger logger = LogManager.getLogger(RollButton.class.getSimpleName());
+public class RollButtonSwing extends MyButtonSwing {
+    protected static final Logger logger = LogManager.getLogger(RollButtonSwing.class.getSimpleName());
 
-    public RollButton(DecathlonUISwing frame, Map<Integer, Die> diceMap, List<Map<Integer, BufferedImage>> sprites){
+    public RollButtonSwing(DecathlonUISwing frame, Map<Integer, DieSwing> diceMap, List<Map<Integer, BufferedImage>> sprites){
         super(frame);
         this.addActionListener(_ -> {
             logger.info("Rolling the dice ");
