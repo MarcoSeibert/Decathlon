@@ -4,6 +4,7 @@ import com.github.marcoseibert.DecathlonApp;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
@@ -15,6 +16,9 @@ public class MainFXMLController {
 
     @FXML
     public GridPane scoreSheet;
+    @FXML
+    public Label title;
+
 
     public void initialize() {
         for (int i = 1; i <= DecathlonApp.nrOfPlayers; i++) {
@@ -35,7 +39,7 @@ public class MainFXMLController {
             }
         }
         for (Node child : scoreSheet.getChildren()){
-            if (Objects.equals(child.getId(), "title")){
+            if (Objects.equals(child, title)){
                 GridPane.setColumnSpan(child, DecathlonApp.nrOfPlayers + 1);
             }
         }
