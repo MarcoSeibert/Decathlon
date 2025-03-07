@@ -36,6 +36,11 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Logging ###
 /log.txt.bak
 /log.txt
+/logs/
+
+### Sprite sheet ###
 /src/main/resources/images/die.png

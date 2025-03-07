@@ -2,7 +2,7 @@
 Digital implementation of the dice game <b>Decathlon</b><br>
 <a href="https://boardgamegeek.com/boardgame/6955/reiner-knizias-decathlon">BGG Link</a>
 <br><br><br>
-<b>Attribution of the discipline icons:</b><br>
+<b>Credits for the discipline icons:</b><br>
 <table>
   <tr>
     <td>Discus & Javelin</td>
