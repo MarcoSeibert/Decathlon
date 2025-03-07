@@ -2,12 +2,12 @@
 <Configuration status="INFO">
     <Appenders>
         <Console name="console" target="SYSTEM_OUT">
-            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm}][%-5level][%logger{36}] - %msg %n" />
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss,SSS}][%-5level][%logger{36}] - %msg %n" />
         </Console>
         <RollingFile name="file" fileName="log.txt" filePattern="logs/app.%d{yyyy-MM-dd}.log">
-            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm}][%-5level][%logger{36}] - %msg %n" />
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss,SSS}][%-5level][%logger{36}] - %msg %n" />
             <Policies>
-                <TimeBasedTriggeringPolicy interval="24" modulate="true"/>
+                <TimeBasedTriggeringPolicy/>
                 <SizeBasedTriggeringPolicy size="250 MB" />
             </Policies>
         </RollingFile>

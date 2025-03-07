@@ -1,60 +1,57 @@
 package com.github.marcoseibert.util;
+import com.github.marcoseibert.MainScene;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 
-public class Die extends JLabel {
+public class Die extends ImageView {
     protected static final Logger logger = LogManager.getLogger(Die.class.getSimpleName());
     private final Random ran = new Random();
     int value = 1;
+    private boolean active = true;
 
     public Die() {
-        BufferedImage dieSprite;
-        try {
-            dieSprite = ImageIO.read(getClass().getClassLoader().getResourceAsStream("images/die1.png"));
-        } catch (IOException e) {
-            dieSprite = new BufferedImage(128, 128, 2);
-        }
-        ImageIcon dieIcon = new ImageIcon(dieSprite);
-        this.setIcon(dieIcon);
-        this.setSize(128, 128);
+        Image dieSprite = new Image(Die.class.getResourceAsStream("/images/die1.png"));
+        this.setImage(dieSprite);
+        this.setFitHeight(128);
+        this.setFitWidth(128);
     }
 
-    public void rollDie(List<Map<Integer, BufferedImage>> sprites){
+    public void rollDie(){
+        List<Map<Integer, Image>> sprites = MainScene.getSpriteMap();
         ObjectProperty<Integer> frameProperty = new SimpleObjectProperty<>(ran.nextInt(8) + 1);
-        Map<Integer, BufferedImage> resultSprites = sprites.getFirst();
-        Map<Integer, BufferedImage> animSprites = sprites.getLast();
+        Map<Integer, Image> resultSprites = sprites.getFirst();
+        Map<Integer, Image> animSprites = sprites.getLast();
 
         int result = ran.nextInt(6) + 1;
         this.value = result;
-        BufferedImage resultImage = resultSprites.get(result - 1);
-        ImageIcon resultIcon = new ImageIcon(resultImage);
+        Image resultImage = resultSprites.get(result - 1);
 
         for (long i=1; i < 20; i++){
             delay(25 * i, ()->incrementImage(frameProperty, animSprites));
         }
-        logger.info("Result of die is {}", result);
-        delay(500, ()-> this.setIcon(resultIcon));
+        logger.debug("Result of die is {}", result);
+        delay(500, ()-> this.setImage(resultImage));
     }
 
-    private void incrementImage(ObjectProperty<Integer> indexProperty, Map<Integer, BufferedImage> animSprites){
+    private void incrementImage(ObjectProperty<Integer> indexProperty, Map<Integer, Image> animSprites){
         int currentValue = indexProperty.get();
         indexProperty.set((currentValue < 8) ? currentValue + 1 : 1);
         indexProperty.addListener(_ -> {
             int frame = indexProperty.get();
-            BufferedImage animImage = animSprites.get(frame - 1);
-            ImageIcon animIcon = new ImageIcon(animImage);
-            this.setIcon(animIcon);
+            Image animImage = animSprites.get(frame - 1);
+            this.setImage(animImage);
         });
     }
 
@@ -72,5 +69,13 @@ public class Die extends JLabel {
         };
         sleeper.setOnSucceeded(_ -> continuation.run());
         new Thread(sleeper).start();
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean b) {
+        active = b;
     }
 }
