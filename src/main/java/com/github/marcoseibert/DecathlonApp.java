@@ -1,30 +1,35 @@
 package com.github.marcoseibert;
-
 import com.github.marcoseibert.util.controller.MainFXMLController;
+
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.scene.ImageCursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
 import javafx.util.Duration;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import javafx.fxml.FXMLLoader;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DecathlonApp extends Application {
-    protected static final Logger logger = LogManager.getLogger(DecathlonApp.class.getSimpleName());
-    public static int nrOfPlayers = 4;
-    public static int activeGame = 1;
+    private static final Logger logger = LogManager.getLogger(DecathlonApp.class.getSimpleName());
+    private static int nrOfPlayers = 4;
+    private static int activeGame = 1;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -35,6 +40,10 @@ public class DecathlonApp extends Application {
         stage.setScene(scene);
         stage.show();
         MainFXMLController controller = loader.getController();
+
+        // Set custom cursor
+        Image cursorUp = new Image("/images/finger_up.png");
+        scene.setCursor(new ImageCursor(cursorUp));
 
         // Creating a map for every player and every game to access the points within
         HashMap<Integer, Map<Integer, TextField>> playerPointsMap = new HashMap<>();
@@ -52,8 +61,10 @@ public class DecathlonApp extends Application {
             }
         }
 
+        // Launch background tasks
         Timeline backgroundTasks = getTimeline(scoreSheet, playerPointsMap);
         backgroundTasks.play();
+
     }
 
     private static Timeline getTimeline(GridPane scoreSheet, HashMap<Integer, Map<Integer, TextField>> playerPointsMap) {
@@ -63,10 +74,12 @@ public class DecathlonApp extends Application {
         highlightGame.setOpacity(0.25);
         highlightGame.setHeight(64);
         highlightGame.setWidth(64);
+        highlightGame.setArcHeight(10);
+        highlightGame.setArcWidth(10);
         scoreSheet.add(highlightGame, 0, 2);
         highlightGame.toBack();
 
-        Timeline backgroundTasks = new Timeline(new KeyFrame(Duration.seconds(1), actionEvent -> {
+        Timeline backgroundTasks = new Timeline(new KeyFrame(Duration.seconds(1), _ -> {
             // Update the total score of the players
             for (int i = 0; i < nrOfPlayers; i++){
                 int totalScore = 0;
@@ -88,8 +101,38 @@ public class DecathlonApp extends Application {
         return backgroundTasks;
     }
 
-    public static void main(String[] args) {
-        launch(args);
+    public static List<Map<Integer, Image>> getSpriteMap() {
+        Map<Integer, Image> resultSprites = new HashMap<>();
+        Map<Integer, Image> animSprites = new HashMap<>();
+
+        for (int i = 0; i < 6; i++) {
+            Image dieSprite = new Image(DecathlonApp.class.getClassLoader().getResourceAsStream("images/die" + (i + 1) + ".png"));
+            resultSprites.put(i, dieSprite);
+        }
+        for (int i = 0; i < 8; i++) {
+            Image dieSprite = new Image(DecathlonApp.class.getClassLoader().getResourceAsStream("images/ani" + (i + 1) + ".png"));
+            animSprites.put(i, dieSprite);
+        }
+
+        List<Map<Integer, Image>> sprites = new ArrayList<>();
+        sprites.add(resultSprites);
+        sprites.add(animSprites);
+
+        return sprites;
     }
 
+    public static int getNrOfPlayers(){
+        return nrOfPlayers;
+    }
+
+    public static int getActiveGame(){
+        return activeGame;
+    }
+    public static void setActiveGame(int i){
+        activeGame = i;
+    }
+
+    public static void main(String[] args) {
+            launch(args);
+        }
 }
