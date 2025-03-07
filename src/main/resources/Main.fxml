@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="1000.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.marcoseibert.util.controller.MainController">
+<AnchorPane id="AnchorPane" prefHeight="1000.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.marcoseibert.controller.MainController">
     <GridPane fx:id="scoreSheet" layoutX="10.0" layoutY="10.0" vgap="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
         <columnConstraints>
             <ColumnConstraints halignment="CENTER" minWidth="74.0" prefWidth="64.0" />

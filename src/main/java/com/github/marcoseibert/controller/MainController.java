@@ -1,5 +1,4 @@
-package com.github.marcoseibert.util.controller;
-import com.github.marcoseibert.DecathlonApp;
+package com.github.marcoseibert.controller;
 import com.github.marcoseibert.MainScene;
 import com.github.marcoseibert.util.Die;
 
@@ -23,7 +22,7 @@ import java.util.Objects;
 
 
 public class MainController {
-    protected static final Logger logger = LogManager.getLogger(DecathlonApp.class.getSimpleName());
+    protected static final Logger logger = LogManager.getLogger(MainController.class.getSimpleName());
     @FXML
     public GridPane scoreSheet;
     @FXML

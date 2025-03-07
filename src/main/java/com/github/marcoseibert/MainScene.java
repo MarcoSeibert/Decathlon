@@ -1,5 +1,5 @@
 package com.github.marcoseibert;
-import com.github.marcoseibert.util.controller.MainController;
+import com.github.marcoseibert.controller.MainController;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -28,7 +28,7 @@ import java.util.Map;
 
 
 public class MainScene {
-    private static final Logger logger = LogManager.getLogger(DecathlonApp.class.getSimpleName());
+    private static final Logger logger = LogManager.getLogger(MainScene.class.getSimpleName());
     private static int nrOfPlayers;
     private static int activeGame = 1;
 
@@ -113,11 +113,11 @@ public class MainScene {
         Map<Integer, Image> animSprites = new HashMap<>();
 
         for (int i = 0; i < 6; i++) {
-            Image dieSprite = new Image(DecathlonApp.class.getClassLoader().getResourceAsStream("images/die" + (i + 1) + ".png"));
+            Image dieSprite = new Image("images/die" + (i + 1) + ".png");
             resultSprites.put(i, dieSprite);
         }
         for (int i = 0; i < 8; i++) {
-            Image dieSprite = new Image(DecathlonApp.class.getClassLoader().getResourceAsStream("images/ani" + (i + 1) + ".png"));
+            Image dieSprite = new Image("images/ani" + (i + 1) + ".png");
             animSprites.put(i, dieSprite);
         }
 

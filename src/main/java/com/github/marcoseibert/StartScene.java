@@ -12,8 +12,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
-public class DecathlonApp extends Application {
-    private static final Logger logger = LogManager.getLogger(DecathlonApp.class.getSimpleName());
+public class StartScene extends Application {
+    private static final Logger logger = LogManager.getLogger(StartScene.class.getSimpleName());
 
     @Override
     public void start(Stage stageStart) throws Exception {
@@ -27,7 +27,6 @@ public class DecathlonApp extends Application {
         // Set custom cursor
         Image cursorUp = new Image("/images/finger_up.png");
         sceneStart.setCursor(new ImageCursor(cursorUp));
-
     }
 
 

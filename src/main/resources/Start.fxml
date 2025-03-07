@@ -2,10 +2,11 @@
 
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.marcoseibert.util.controller.StartController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.marcoseibert.controller.StartController">
     <Label alignment="CENTER" layoutY="14.0" text="How many players?" textAlignment="CENTER" AnchorPane.leftAnchor="163.0">
         <font>
           <Font name="Trebuchet MS" size="32.0" />
@@ -22,11 +23,11 @@
          <Font name="Trebuchet MS" size="32.0" />
       </font>
    </Label>
-   <Button fx:id="startButton" layoutY="427.0" mnemonicParsing="false" onMouseClicked="#startTheGame" text="Start" AnchorPane.leftAnchor="243.0">
+   <Button fx:id="startButton" layoutY="427.0" mnemonicParsing="false" onMouseClicked="#startTheGame" onMousePressed="#setCursorDown" text="Start" AnchorPane.leftAnchor="243.0">
       <font>
          <Font name="Trebuchet MS" size="32.0" />
       </font></Button>
-    <GridPane fx:id="playerGrid" layoutX="14.0" layoutY="161.0" AnchorPane.leftAnchor="117.0">
+    <GridPane fx:id="playerGrid" layoutX="14.0" layoutY="161.0" onMouseEntered="#setCursorUp" AnchorPane.leftAnchor="117.0">
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" />
         </columnConstraints>
@@ -40,21 +41,33 @@
            <font>
                <Font name="Trebuchet MS" size="32.0" />
            </font>
+         <effect>
+            <InnerShadow />
+         </effect>
         </TextField>
         <TextField alignment="CENTER" promptText="Player 2" visible="false" GridPane.rowIndex="1">
            <font>
                <Font name="Trebuchet MS" size="32.0" />
            </font>
+         <effect>
+            <InnerShadow />
+         </effect>
         </TextField>
         <TextField alignment="CENTER" promptText="Player 3" visible="false" GridPane.rowIndex="2">
            <font>
                <Font name="Trebuchet MS" size="32.0" />
            </font>
+         <effect>
+            <InnerShadow />
+         </effect>
         </TextField>
         <TextField alignment="CENTER" promptText="Player 4" visible="false" GridPane.rowIndex="3">
            <font>
                <Font name="Trebuchet MS" size="32.0" />
            </font>
+         <effect>
+            <InnerShadow />
+         </effect>
         </TextField>
     </GridPane>
 </AnchorPane>

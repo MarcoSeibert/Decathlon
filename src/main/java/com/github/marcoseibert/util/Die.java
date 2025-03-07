@@ -22,7 +22,7 @@ public class Die extends ImageView {
     private boolean active = true;
 
     public Die() {
-        Image dieSprite = new Image(Die.class.getResourceAsStream("/images/die1.png"));
+        Image dieSprite = new Image("/images/die1.png");
         this.setImage(dieSprite);
         this.setFitHeight(128);
         this.setFitWidth(128);
