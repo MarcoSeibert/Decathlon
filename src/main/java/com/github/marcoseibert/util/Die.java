@@ -1,5 +1,5 @@
 package com.github.marcoseibert.util;
-import com.github.marcoseibert.DecathlonApp;
+import com.github.marcoseibert.MainScene;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -29,7 +29,7 @@ public class Die extends ImageView {
     }
 
     public void rollDie(){
-        List<Map<Integer, Image>> sprites = DecathlonApp.getSpriteMap();
+        List<Map<Integer, Image>> sprites = MainScene.getSpriteMap();
         ObjectProperty<Integer> frameProperty = new SimpleObjectProperty<>(ran.nextInt(8) + 1);
         Map<Integer, Image> resultSprites = sprites.getFirst();
         Map<Integer, Image> animSprites = sprites.getLast();

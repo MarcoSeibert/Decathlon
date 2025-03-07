@@ -1,5 +1,6 @@
 package com.github.marcoseibert.util.controller;
 import com.github.marcoseibert.DecathlonApp;
+import com.github.marcoseibert.MainScene;
 import com.github.marcoseibert.util.Die;
 
 import javafx.fxml.FXML;
@@ -21,7 +22,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.Objects;
 
 
-public class MainFXMLController {
+public class MainController {
     protected static final Logger logger = LogManager.getLogger(DecathlonApp.class.getSimpleName());
     @FXML
     public GridPane scoreSheet;
@@ -35,7 +36,7 @@ public class MainFXMLController {
 
     public void initialize() {
         logger.debug("Initializing score pad");
-        int nrOfPlayers = DecathlonApp.getNrOfPlayers();
+        int nrOfPlayers = MainScene.getNrOfPlayers();
         for (int i = 1; i <= nrOfPlayers; i++) {
             for (int j = 1; j <= 12; j++) {
                 TextField text = new TextField();
@@ -43,8 +44,9 @@ public class MainFXMLController {
                 text.setEditable(false);
                 text.setFocusTraversable(false);
                 text.setFont(Font.font("Trebuchet MS", 32));
-                text.setPrefSize(128, 64);
-                text.setMaxSize(128, 64);
+                int width = 512 / nrOfPlayers;
+                text.setPrefSize(width, 64);
+                text.setMaxSize(width, 64);
                 Image cursorUp = new Image("/images/finger_up.png");
                 text.setCursor(new ImageCursor(cursorUp));
                 switch (j) {
