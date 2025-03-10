@@ -1,6 +1,7 @@
 package com.github.marcoseibert.controller;
 import com.github.marcoseibert.MainScene;
 
+import com.github.marcoseibert.util.Player;
 import javafx.fxml.FXML;
 import javafx.scene.ImageCursor;
 import javafx.scene.Node;
@@ -23,7 +24,6 @@ import java.util.Objects;
 
 public class StartController {
     protected static final Logger logger = LogManager.getLogger(StartController.class.getSimpleName());
-    private int nrOfPlayers = 1;
 
     @FXML
     public ChoiceBox<String> playerNumberChoioceBox;
@@ -33,7 +33,7 @@ public class StartController {
     public Button startButton;
 
     public void setPlayerNumber() {
-       nrOfPlayers = Integer.parseInt(playerNumberChoioceBox.getValue());
+       int nrOfPlayers = Integer.parseInt(playerNumberChoioceBox.getValue());
        MainScene.setNrOfPlayers(nrOfPlayers);
        for (int i=0; i<=3; i++){
            TextField playerName = (TextField) playerGrid.getChildren().get(i);
@@ -49,19 +49,20 @@ public class StartController {
 
     public void startTheGame(MouseEvent mouseEvent) throws IOException {
         boolean start = false;
-        List<String> playerNames = new ArrayList<>();
+        List<Player> playersList = new ArrayList<>();
         if (mouseEvent.getButton() == MouseButton.PRIMARY){
             for (Node child:playerGrid.getChildren()){
                 TextField playerName = (TextField) child;
                 if (!playerName.isVisible()) {continue;}
                 start = !Objects.equals(playerName.getText(), "");
-                playerNames.add(playerName.getText());
+                Player player = new Player(playerName.getText());
+                playersList.add(player);
                 }
             }
         if (start) {
             logger.debug("Starting the game");
             Stage stageStart = (Stage) startButton.getScene().getWindow();
-            MainScene.start(stageStart, nrOfPlayers, playerNames);
+            MainScene.start(stageStart, playersList);
         }
     }
 

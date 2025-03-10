@@ -32,7 +32,6 @@ public class MainController {
     @FXML
     public Button rollButton;
 
-
     public void initialize() {
         logger.debug("Initializing score pad");
         int nrOfPlayers = MainScene.getNrOfPlayers();
@@ -93,4 +92,5 @@ public class MainController {
             rollButton.setCursor(new ImageCursor(cursorUp));
         }
     }
+
 }

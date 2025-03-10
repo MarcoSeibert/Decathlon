@@ -29,9 +29,8 @@ public class StartScene extends Application {
         sceneStart.setCursor(new ImageCursor(cursorUp));
     }
 
-
-
     public static void main(String[] args) {
             launch(args);
         }
+
 }

@@ -19,7 +19,7 @@ public class Die extends ImageView {
     protected static final Logger logger = LogManager.getLogger(Die.class.getSimpleName());
     private final Random ran = new Random();
     int value = 1;
-    private boolean active = true;
+    private boolean active = false;
 
     public Die() {
         Image dieSprite = new Image("/images/die1.png");

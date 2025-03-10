@@ -1,0 +1,66 @@
+{
+  "games": [
+    {
+      "name": "100 m dash",
+      "category": "Running",
+      "groups of dice": 2,
+      "dice per group": 4,
+      "foul value": 6
+    },
+    {
+      "name": "Long jump",
+      "category": "LongJumping"
+    },
+    {
+      "name": "Shot put",
+      "category": "ShotPut"
+    },
+    {
+      "name": "High jump",
+      "category": "HighJumping",
+      "min number of dice": 5,
+      "max number of dice": 5,
+      "foul value": 0
+    },
+    {
+      "name": "400 m dash",
+      "category": "Running",
+      "groups of dice": 4,
+      "dice per group": 2,
+      "foul value": 6
+    },
+    {
+      "name": "110 m hurdles",
+      "category": "Running",
+      "groups of dice": 1,
+      "dice per group": 5,
+      "foul value": 0
+    },
+    {
+      "name": "Discus throw",
+      "category": "Throwing",
+      "number of dice": 5,
+      "parity": "even"
+    },
+    {
+      "name": "Pole vault",
+      "category": "HighJumping",
+      "min number of dice": 2,
+      "max number of dice": 8,
+      "foul value": 1
+    },
+    {
+      "name": "Javelin throw",
+      "category": "Throwing",
+      "number of dice": 6,
+      "parity": "odd"
+    },
+    {
+      "name": "1500 m run",
+      "category": "Running",
+      "groups of dice": 8,
+      "dice per group": 1,
+      "foul value": 0
+    }
+  ]
+}
