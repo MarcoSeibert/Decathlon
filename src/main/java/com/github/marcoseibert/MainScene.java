@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class MainScene {
@@ -165,20 +166,31 @@ public class MainScene {
 
     private static Timeline getRunningGameTimeline(MainController controller) {
         Game game;
+        AtomicReference<Map<String, String>> gameState = new AtomicReference<>(new HashMap<>());
+        gameState.get().put("round", "0");
+        gameState.get().put("activePlayer", "0");
+        gameState.get().put("currentScore", "0");
         String activeGameCategory = gameCategoryMap.get(activeGame);
-        game = switch (activeGameCategory) {
-            case RUNNING -> new RunningGame(runningGamesParametersMap.get(activeGame), controller);
-            case HIGHJUMPING -> new HighJumpingGame(highJumpingGamesParametersMap.get(activeGame), controller);
-            case THROWING -> new ThrowingGame(throwingGamesParametersMap.get(activeGame), controller);
-            default -> new RestGame(restGamesParametersMap.get(activeGame), controller);
-        };
+        switch (activeGameCategory){
+            case RUNNING -> {
+                Map<String, String> activeGameMap = runningGamesParametersMap.get(activeGame);
+                String name = activeGameMap.get("name");
+                String nrDice = activeGameMap.get("dicePerGroup");
+                gameState.get().put("name", name);
+                gameState.get().put("nrDice", nrDice);
+                gameState.get().put("remainingRerolls", "5");
+
+                game = new RunningGame();
+            }
+            default -> game = new RestGame();
+        }
 
         Timeline runningTasks = new Timeline(new KeyFrame(Duration.millis(100), _ -> {
-                game.playGame();
-                logger.debug("Starting the game: {}", game);
+                gameState.set(game.playGame(gameState.get(), controller));
             // run stuff
         }));
-        runningTasks.setCycleCount(15);
+        runningTasks.setCycleCount(Animation.INDEFINITE);
+        logger.debug("Starting the game: {}", game);
         return runningTasks;
     }
 
