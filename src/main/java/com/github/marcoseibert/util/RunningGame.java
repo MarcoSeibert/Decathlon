@@ -10,8 +10,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class RunningGame extends Game {
 
-    public RunningGame(MainController controller, Map<String, String> activeGameMap) {
-        super(controller, activeGameMap);
+    public RunningGame() {
+        super();
     }
 
     @Override
@@ -49,7 +49,7 @@ public class RunningGame extends Game {
                     }
                 }
             }
-            Functions.updateActiveDice(gameState, allDiceList, controller.dicePane);
+            Functions.updateActiveDice(gameState, MainScene.getStartDiceList(), controller.dicePane);
         }
         return gameState;
     }

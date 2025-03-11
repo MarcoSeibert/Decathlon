@@ -42,6 +42,7 @@ public class MainScene {
     private static AtomicReference<Map<String, String>> gameState = new AtomicReference<>(new HashMap<>());
     private static final HashMap<Integer, Map<Integer, TextField>> playerPointsMap = new HashMap<>();
     private static final Map<Integer, Map<String, String>> gamesParameterMap = new HashMap<>();
+    protected static final List<Die> START_DICE_LIST = new ArrayList<>();
 
     private static int activeGame = 0;
 
@@ -63,6 +64,15 @@ public class MainScene {
         Image cursorUp = new Image("/images/finger_up.png");
         sceneMain.setCursor(new ImageCursor(cursorUp));
 
+        createPlayerPointsMap(controller);
+        createGamesParameterMap();
+
+        // Launch task
+        Timeline timeLine = getTimeLine(controller);
+        timeLine.play();
+    }
+
+    private static void createPlayerPointsMap(MainController controller) {
         // Creating a map for every player and every game to access the points within
         for (int i = 0; i < nrOfPlayers; i++){
             HashMap<Integer, TextField> gameMap = new HashMap<>();
@@ -80,7 +90,9 @@ public class MainScene {
                 }
             }
         }
+    }
 
+    private static void createGamesParameterMap() throws IOException {
         // Import the game parameters from the json file and put them in a map
         InputStream is = new FileInputStream("src/main/resources/GameParameters.json");
         String jsonTxt = IOUtils.toString(is, StandardCharsets.UTF_8);
@@ -128,14 +140,72 @@ public class MainScene {
             }
             gamesParameterMap.put(gameId, gameParameterMap);
         }
-        // Launch background tasks
-        Timeline runningGames = getRunningGameTimeline(controller);
-        runningGames.play();
-        Timeline backgroundTasks = getBackgorundTasksTimeline(scoreSheet, controller.dicePane, playerPointsMap);
-        backgroundTasks.play();
     }
 
-    private static Timeline getRunningGameTimeline(MainController controller) {
+    private static Timeline getTimeLine(MainController controller) {
+        initGameState();
+        return getTasks(controller);
+    }
+
+    private static Timeline getTasks(MainController controller) {
+        Timeline runningTasks = new Timeline(new KeyFrame(Duration.millis(100), _ -> {
+            Map<String, String> activeGameMap = gamesParameterMap.get(activeGame);
+            Game game = null;
+            if (Objects.equals(gameState.get().get("gameOver"), "true")) {
+                // TODO switch für unterschiedliche categories
+                createStartingDice(controller, activeGameMap);
+                showStartingDice(controller);
+                game = new RunningGame();
+            }
+            gameState = game.playGame(gameState, controller, activeGameMap);
+
+        }));
+        runningTasks.setCycleCount(Animation.INDEFINITE);
+        return runningTasks;
+    }
+
+    private static void showStartingDice(MainController controller) {
+        int shownDice = 0;
+        for (Node child:controller.dicePane.getChildren()){
+            if (child instanceof Die die){
+                die.setVisible(true);
+                shownDice += 1;
+            }
+            if (shownDice == START_DICE_LIST.size()){break;}
+        }
+    }
+
+    private static void createStartingDice(MainController controller, Map<String, String> activeGameMap) {
+        int initDice = 0;
+        String category = activeGameMap.get(CATEGORY);
+        switch (category){
+            case RUNNING:
+                initDice = Integer.parseInt(activeGameMap.get("dicePerGroup"));
+                break;
+            case THROWING:
+                initDice = Integer.parseInt(activeGameMap.get("nrDice"));
+                break;
+            case HIGHJUMPING:
+                initDice = Integer.parseInt(activeGameMap.get("minDice"));
+                break;
+            default:
+                if (Objects.equals(activeGameMap.get("name"), "Shot Put")){
+                    initDice = 1;
+                } else if (Objects.equals(activeGameMap.get("name"), "Long jump")){
+                    initDice = 5;
+                }
+        }
+        for (Node child: controller.dicePane.getChildren()) {
+            if (child instanceof Die die) {
+                START_DICE_LIST.add(die);
+            }
+            if (START_DICE_LIST.size() == initDice){
+                break;
+            }
+        }
+    }
+
+    private static void initGameState() {
         // General attributes for game state
         gameState.get().put("gameId", "0");
         gameState.get().put("activePlayer", "0");
@@ -153,42 +223,6 @@ public class MainScene {
         // TODO
         // Attributes for the two rest games
         // TODO
-
-        Timeline runningTasks = new Timeline(new KeyFrame(Duration.millis(100), _ -> {
-            Map<String, String> activeGameMap = gamesParameterMap.get(activeGame);
-            // TODO switch für unterschiedliche categories
-            if (Objects.equals(gameState.get().get("gameOver"), "true")) {
-                Game game = new RunningGame(controller, activeGameMap);
-            }
-//            gameState = game.playGame(gameState, controller, activeGameMap);
-
-        }));
-        runningTasks.setCycleCount(Animation.INDEFINITE);
-
-        return runningTasks;
-
-//        String activeGameCategory = gameCategoryMap.get(activeGame);
-//        switch (activeGameCategory){
-//            case RUNNING -> {
-//                Map<String, String> activeGameMap = runningGamesParametersMap.get(activeGame);
-//                String name = activeGameMap.get("name");
-//                String nrDice = activeGameMap.get("dicePerGroup");
-//                String nrRounds = activeGameMap.get("groups");
-//                gameState.get().put("name", name);
-//                gameState.get().put("nrDice", nrDice);
-//                gameState.get().put("remainingRerolls", "5");
-//                gameState.get().put("nrRounds", nrRounds);
-//                if (!Objects.equals(name, "110 m hurdles")){
-//                    gameState.get().put("foulValue", "6");
-//                } else {
-//                    gameState.get().put("foulValue", null);
-//                }
-//
-//                game = new RunningGame(controller);
-//            }
-//            default -> game = new RestGame();
-//        }
-
     }
 
     private static Timeline getBackgorundTasksTimeline(GridPane scoreSheet, GridPane dicePane, HashMap<Integer, Map<Integer, TextField>> playerPointsMap) {
@@ -298,5 +332,9 @@ public class MainScene {
 
     public static List<Player> getPlayersList() {
         return playersList;
+    }
+
+    public static List<Die> getStartDiceList() {
+        return START_DICE_LIST;
     }
 }
