@@ -3,6 +3,7 @@ import com.github.marcoseibert.MainScene;
 import com.github.marcoseibert.util.Die;
 
 import com.github.marcoseibert.util.Functions;
+import com.github.marcoseibert.util.Game;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.ImageCursor;
@@ -71,6 +72,8 @@ public class MainController {
                 GridPane.setColumnSpan(child, nrOfPlayers + 1);
             }
         }
+        int dieAmount = Game.getAllDiceList().size();
+        System.out.println(dieAmount);
         for (int i=0; i < 8; i++) {
             Die die = new Die();
             dicePane.add(die, i%2, i/2 + 2);
