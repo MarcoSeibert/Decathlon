@@ -1,15 +1,17 @@
 package com.github.marcoseibert.controller;
 import com.github.marcoseibert.MainScene;
 import com.github.marcoseibert.util.Die;
+import com.github.marcoseibert.util.Functions;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.ImageCursor;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -23,6 +25,7 @@ import java.util.Objects;
 
 public class MainController {
     protected static final Logger logger = LogManager.getLogger(MainController.class.getSimpleName());
+    private static final double SPRITE_SIZE = 64;
     @FXML
     public GridPane scoreSheet;
     @FXML
@@ -31,6 +34,26 @@ public class MainController {
     public Label title;
     @FXML
     public Button rollButton;
+    @FXML
+    public ImageView running100;
+    @FXML
+    public ImageView running400;
+    @FXML
+    public ImageView running1500;
+    @FXML
+    public ImageView longJump;
+    @FXML
+    public ImageView shotPut;
+    @FXML
+    public ImageView highJump;
+    @FXML
+    public ImageView hurdles;
+    @FXML
+    public ImageView discus;
+    @FXML
+    public ImageView poleVault;
+    @FXML
+    public ImageView javelin;
 
 
     public void initialize() {
@@ -46,8 +69,8 @@ public class MainController {
                 int width = 512 / nrOfPlayers;
                 text.setPrefSize(width, 64);
                 text.setMaxSize(width, 64);
-                Image cursorUp = new Image("/images/finger_up.png");
-                text.setCursor(new ImageCursor(cursorUp));
+                Cursor cursorUp = Functions.getCustomCursor("up");
+                text.setCursor(cursorUp);
                 switch (j) {
                     case 1 -> text.setDisable(true);
                     case 12 -> text.setText("0");
@@ -61,6 +84,17 @@ public class MainController {
                 GridPane.setColumnSpan(child, nrOfPlayers + 1);
             }
         }
+        Rectangle2D runningRect = new Rectangle2D(2 * SPRITE_SIZE, SPRITE_SIZE, SPRITE_SIZE, SPRITE_SIZE);
+        running100.setViewport(runningRect);
+        longJump.setViewport(new Rectangle2D(0, SPRITE_SIZE, SPRITE_SIZE, SPRITE_SIZE));
+        shotPut.setViewport(new Rectangle2D(3 * SPRITE_SIZE, SPRITE_SIZE, SPRITE_SIZE, SPRITE_SIZE));
+        highJump.setViewport(new Rectangle2D(SPRITE_SIZE, 0, SPRITE_SIZE, SPRITE_SIZE));
+        running400.setViewport(runningRect);
+        hurdles.setViewport(new Rectangle2D(2 * SPRITE_SIZE, 0, SPRITE_SIZE, SPRITE_SIZE));
+        discus.setViewport(new Rectangle2D(0,0, SPRITE_SIZE, SPRITE_SIZE));
+        poleVault.setViewport(new Rectangle2D(SPRITE_SIZE, SPRITE_SIZE, SPRITE_SIZE, SPRITE_SIZE));
+        javelin.setViewport(new Rectangle2D(3 * SPRITE_SIZE,0, SPRITE_SIZE, SPRITE_SIZE));
+        running1500.setViewport(runningRect);
         logger.debug("Initializing dice");
         for (int i=0; i < 8; i++) {
             Die die = new Die();
@@ -83,14 +117,14 @@ public class MainController {
     // Change cursor upon clicking the roll button
     public void setCursorDown(MouseEvent mouseEvent) {
         if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-            Image cursorDown = new Image("/images/finger_down.png");
-            rollButton.setCursor(new ImageCursor(cursorDown));
+            Cursor cursorDown = Functions.getCustomCursor("down");
+            rollButton.setCursor(cursorDown);
         }
     }
     public void setCursorUp(MouseEvent mouseEvent) {
         if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-            Image cursorUp = new Image("/images/finger_up.png");
-            rollButton.setCursor(new ImageCursor(cursorUp));
+            Cursor cursorUp = Functions.getCustomCursor("up");
+            rollButton.setCursor(cursorUp);
         }
     }
 }

@@ -1,17 +1,15 @@
 package com.github.marcoseibert.util;
-import com.github.marcoseibert.MainScene;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 
@@ -20,38 +18,42 @@ public class Die extends ImageView {
     private final Random ran = new Random();
     int value = 1;
     private boolean active = true;
+    private static final double SPRITE_SIZE = 128;
+    private static final int ANIM_SPRITES = 8;
+    private static final int RESULT_SPRITES = 6;
+    private static final Image diceSpriteSheet = new Image("images/diceSpriteSheet.png");
+
 
     public Die() {
-        Image dieSprite = new Image("/images/die1.png");
-        this.setImage(dieSprite);
+        this.setImage(diceSpriteSheet);
+        this.setViewport(new Rectangle2D(0,0, SPRITE_SIZE, SPRITE_SIZE));
         this.setFitHeight(128);
         this.setFitWidth(128);
     }
 
     public void rollDie(){
-        List<Map<Integer, Image>> sprites = MainScene.getSpriteMap();
-        ObjectProperty<Integer> frameProperty = new SimpleObjectProperty<>(ran.nextInt(8) + 1);
-        Map<Integer, Image> resultSprites = sprites.getFirst();
-        Map<Integer, Image> animSprites = sprites.getLast();
+        ObjectProperty<Integer> frameProperty = new SimpleObjectProperty<>(ran.nextInt(ANIM_SPRITES) + 1);
 
-        int result = ran.nextInt(6) + 1;
+        int result = ran.nextInt(RESULT_SPRITES) + 1;
         this.value = result;
-        Image resultImage = resultSprites.get(result - 1);
 
         for (long i=1; i < 20; i++){
-            delay(25 * i, ()->incrementImage(frameProperty, animSprites));
+            delay(25 * i, ()->incrementImage(frameProperty));
         }
         logger.debug("Result of die is {}", result);
-        delay(500, ()-> this.setImage(resultImage));
+        delay(500, ()-> {
+            this.setViewport(new Rectangle2D((result - 1) * SPRITE_SIZE, 0, SPRITE_SIZE, SPRITE_SIZE));
+            // TODO
+            // rot einfärben, wenn foul value
+        });
     }
 
-    private void incrementImage(ObjectProperty<Integer> indexProperty, Map<Integer, Image> animSprites){
+    private void incrementImage(ObjectProperty<Integer> indexProperty){
         int currentValue = indexProperty.get();
-        indexProperty.set((currentValue < 8) ? currentValue + 1 : 1);
+        indexProperty.set((currentValue < ANIM_SPRITES) ? currentValue + 1 : 1);
         indexProperty.addListener(_ -> {
             int frame = indexProperty.get();
-            Image animImage = animSprites.get(frame - 1);
-            this.setImage(animImage);
+            this.setViewport(new Rectangle2D((frame - 1) * SPRITE_SIZE, 4 * SPRITE_SIZE,SPRITE_SIZE, SPRITE_SIZE));
         });
     }
 

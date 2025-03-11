@@ -1,27 +1,26 @@
 package com.github.marcoseibert;
 import com.github.marcoseibert.controller.MainController;
+import com.github.marcoseibert.util.Functions;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.ImageCursor;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javafx.util.Duration;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,8 +46,8 @@ public class MainScene {
         MainController controller = loaderMain.getController();
 
         // Set custom cursor
-        Image cursorUp = new Image("/images/finger_up.png");
-        sceneMain.setCursor(new ImageCursor(cursorUp));
+        Cursor cursorUp = Functions.getCustomCursor("up");
+        sceneMain.setCursor(cursorUp);
 
         // Creating a map for every player and every game to access the points within
         HashMap<Integer, Map<Integer, TextField>> playerPointsMap = new HashMap<>();
@@ -108,26 +107,6 @@ public class MainScene {
         return backgroundTasks;
     }
 
-    public static List<Map<Integer, Image>> getSpriteMap() {
-        Map<Integer, Image> resultSprites = new HashMap<>();
-        Map<Integer, Image> animSprites = new HashMap<>();
-
-        for (int i = 0; i < 6; i++) {
-            Image dieSprite = new Image("images/die" + (i + 1) + ".png");
-            resultSprites.put(i, dieSprite);
-        }
-        for (int i = 0; i < 8; i++) {
-            Image dieSprite = new Image("images/ani" + (i + 1) + ".png");
-            animSprites.put(i, dieSprite);
-        }
-
-        List<Map<Integer, Image>> sprites = new ArrayList<>();
-        sprites.add(resultSprites);
-        sprites.add(animSprites);
-
-        return sprites;
-    }
-
     public static int getNrOfPlayers(){
         return nrOfPlayers;
     }
@@ -135,10 +114,4 @@ public class MainScene {
         nrOfPlayers = i;
     }
 
-    public static int getActiveGame(){
-        return activeGame;
-    }
-    public static void setActiveGame(int i){
-        activeGame = i;
-    }
 }
