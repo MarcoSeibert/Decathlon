@@ -14,16 +14,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class StartController {
-    protected static final Logger logger = LogManager.getLogger(StartController.class.getSimpleName());
 
     @FXML
     public ChoiceBox<String> playerNumberChoioceBox;
@@ -60,7 +56,6 @@ public class StartController {
                 }
             }
         if (start) {
-            logger.debug("Starting the game");
             Stage stageStart = (Stage) startButton.getScene().getWindow();
             MainScene.start(stageStart, playersList);
         }

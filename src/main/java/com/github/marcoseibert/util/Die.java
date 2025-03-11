@@ -7,8 +7,6 @@ import javafx.concurrent.Task;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +14,6 @@ import java.util.Random;
 
 
 public class Die extends ImageView {
-    protected static final Logger logger = LogManager.getLogger(Die.class.getSimpleName());
     private final Random ran = new Random();
     private int value = 1;
     private boolean active = false;
@@ -41,7 +38,6 @@ public class Die extends ImageView {
         for (long i=1; i < 20; i++){
             delay(25 * i, ()->incrementImage(frameProperty, animSprites));
         }
-        logger.debug("Result of die is {}", result);
         delay(500, ()-> this.setImage(resultImage));
     }
 
@@ -62,7 +58,6 @@ public class Die extends ImageView {
                 try { Thread.sleep(millis);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
-                    logger.warn("Thread interrupted: ", e.fillInStackTrace());
                 }
                 return null;
             }

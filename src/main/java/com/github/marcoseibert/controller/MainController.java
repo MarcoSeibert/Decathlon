@@ -16,9 +16,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +24,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 
 public class MainController {
-    protected static final Logger logger = LogManager.getLogger(MainController.class.getSimpleName());
 
     private AtomicReference<Map<String, String>> gameState;
     private static final String THISROUNDSCORE = "thisRoundScore";
@@ -49,7 +45,6 @@ public class MainController {
     public Label scoreLabel;
 
     public void initialize() {
-        logger.debug("Initializing score pad");
         int nrOfPlayers = MainScene.getNrOfPlayers();
         for (int i = 1; i <= nrOfPlayers; i++) {
             for (int j = 1; j <= 12; j++) {
@@ -76,7 +71,6 @@ public class MainController {
                 GridPane.setColumnSpan(child, nrOfPlayers + 1);
             }
         }
-        logger.debug("Initializing dice");
         for (int i=0; i < 8; i++) {
             Die die = new Die();
             dicePane.add(die, i%2, i/2 + 2);
@@ -87,7 +81,6 @@ public class MainController {
         if (mouseEvent.getButton() == MouseButton.PRIMARY){
             gameState = MainScene.getGameState();
             if (!rolled) {
-                logger.debug("Rolling the dice");
                 rolled = true;
                 for (Node child:dicePane.getChildren()){
                     if (Objects.equals(child.getId(), "continueButton")){
@@ -96,16 +89,13 @@ public class MainController {
                     }
                 }
             } else {
-                logger.debug("Rerolling the dice");
                 int oldRerolls = Integer.parseInt(gameState.get().get("remainingRerolls"));
                 gameState.get().put("remainingRerolls", String.valueOf(oldRerolls - 1));
             }
             int thisRoundScore = getThisRoundScore();
             gameState.get().put(THISROUNDSCORE, String.valueOf(thisRoundScore));
             MainScene.setGameState(gameState);
-
         }
-
     }
 
     private int getThisRoundScore() {
@@ -153,6 +143,10 @@ public class MainController {
         return rolled;
     }
 
+    public void setRolled(boolean rolled) {
+        this.rolled = rolled;
+    }
+
     public void nextRound(MouseEvent mouseEvent) {
         if (mouseEvent.getButton() == MouseButton.PRIMARY) {
             gameState = MainScene.getGameState();
@@ -163,23 +157,19 @@ public class MainController {
             int previousRoundsScore = Integer.parseInt(gameState.get().get("previousRoundsScore"));
             int thisRoundScore = Integer.parseInt(gameState.get().get(THISROUNDSCORE));
             gameState.get().put("previousRoundsScore", String.valueOf(previousRoundsScore + thisRoundScore));
-            if (currentRound + 1 == maxRounds){
-                for (Node child:dicePane.getChildren()){
-                    if (Objects.equals(child.getId(), "continueButton")){
-                        child.setDisable(true);
-                    }
-                }
+            if (currentRound + 1 == maxRounds) {
+                //TODO
             } else {
                 List<Die> allDiceList = new ArrayList<>();
-                for (Node child:dicePane.getChildren()) {
+                for (Node child : dicePane.getChildren()) {
                     if (child instanceof Die die) {
                         allDiceList.add(die);
+                        }
                     }
-                }
-                Functions.updateActiveDice(gameState, allDiceList);
+                Functions.updateActiveDice(gameState, allDiceList, dicePane);
                 int thisRoundScoreNextRound = getThisRoundScore();
                 gameState.get().put(THISROUNDSCORE, String.valueOf(thisRoundScoreNextRound));
-            }
+                }
             MainScene.setGameState(gameState);
         }
     }

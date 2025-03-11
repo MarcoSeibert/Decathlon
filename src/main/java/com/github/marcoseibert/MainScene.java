@@ -20,8 +20,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -38,11 +36,10 @@ public class MainScene {
     private static final String THROWING = "Throwing";
     private static final String HIGHJUMPING = "HighJumping";
     private static final String REST = "Rest";
-    private static final Logger logger = LogManager.getLogger(MainScene.class.getSimpleName());
     private static int nrOfPlayers;
     private static List<Player> playersList;
     private static AtomicReference<Map<String, String>> gameState = new AtomicReference<>(new HashMap<>());
-
+    private static HashMap<Integer, Map<Integer, TextField>> playerPointsMap = new HashMap<>();
 
     private static final Map<Integer, Map<String, String>> runningGamesParametersMap = new HashMap<>();
     private static final Map<Integer, Map<String, String>> highJumpingGamesParametersMap = new HashMap<>();
@@ -54,7 +51,6 @@ public class MainScene {
     private static int activeGame = 0;
 
     private MainScene(){
-        logger.debug("Should not be visible!");
     }
 
     public static void start(Stage stageMain, List<Player> playersListInput) throws IOException {
@@ -73,7 +69,6 @@ public class MainScene {
         sceneMain.setCursor(new ImageCursor(cursorUp));
 
         // Creating a map for every player and every game to access the points within
-        HashMap<Integer, Map<Integer, TextField>> playerPointsMap = new HashMap<>();
         for (int i = 0; i < nrOfPlayers; i++){
             HashMap<Integer, TextField> gameMap = new HashMap<>();
             playerPointsMap.put(i+1, gameMap);
@@ -160,12 +155,14 @@ public class MainScene {
 
     private static Timeline getRunningGameTimeline(MainController controller) {
         Game game;
+        gameState.get().put("gameId", String.valueOf(activeGame));
         gameState.get().put("round", "0");
         gameState.get().put("activePlayer", "0");
         gameState.get().put("previousRoundsScore", "0");
         gameState.get().put("thisRoundScore", "0");
         gameState.get().put("nextRound", "false");
         String activeGameCategory = gameCategoryMap.get(activeGame);
+        gameState.get().put("category", activeGameCategory);
         switch (activeGameCategory){
             case RUNNING -> {
                 Map<String, String> activeGameMap = runningGamesParametersMap.get(activeGame);
@@ -181,7 +178,7 @@ public class MainScene {
                 } else {
                     gameState.get().put("foulValue", null);
                 }
-                logger.debug("Starting the game: {}", name);
+
                 game = new RunningGame(controller);
             }
             default -> game = new RestGame();
@@ -294,4 +291,11 @@ public class MainScene {
         nrOfPlayers = i;
     }
 
+    public static Map<Integer, Map<Integer, TextField>> getPlayerPointsMap() {
+        return playerPointsMap;
+    }
+
+    public static List<Player> getPlayersList() {
+        return playersList;
+    }
 }

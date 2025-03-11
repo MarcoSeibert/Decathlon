@@ -8,16 +8,12 @@ import javafx.stage.Stage;
 import javafx.scene.Parent;
 import javafx.fxml.FXMLLoader;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 
 public class StartScene extends Application {
-    private static final Logger logger = LogManager.getLogger(StartScene.class.getSimpleName());
 
     @Override
     public void start(Stage stageStart) throws Exception {
-        logger.info("Starting!");
         FXMLLoader loaderStart = new FXMLLoader(getClass().getClassLoader().getResource("Start.fxml"));
         Parent rootStart = loaderStart.load();
         Scene sceneStart = new Scene(rootStart);

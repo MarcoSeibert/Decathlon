@@ -1,14 +1,18 @@
 package com.github.marcoseibert.util;
 
+import javafx.scene.Node;
+import javafx.scene.layout.GridPane;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Functions {
     private Functions(){
             }
-    public static void updateActiveDice(AtomicReference<Map<String, String>> gameState, List<Die> allDiceList){
+    public static void updateActiveDice(AtomicReference<Map<String, String>> gameState, List<Die> allDiceList, GridPane dicePane){
         int nrDice = Integer.parseInt(gameState.get().get("nrDice"));
         int round = Integer.parseInt(gameState.get().get("round"));
         for (Die die:allDiceList){die.setActive(false);}
@@ -18,6 +22,11 @@ public class Functions {
         }
         for (Die die:activeDiceList){
             die.setActive(true);
+        }
+        for (Node child:dicePane.getChildren()){
+            if (Objects.equals(child.getId(), "continueButton")){
+                child.setDisable(false);
+            }
         }
     }
 }

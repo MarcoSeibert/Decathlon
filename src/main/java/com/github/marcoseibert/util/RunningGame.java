@@ -50,13 +50,23 @@ public class RunningGame extends Game {
                     break;
                 }
             }
+            writePointsInScoreSheet(gameState);
+            controller.setRolled(false);
+            for (Node child : controller.dicePane.getChildren()) {
+                if (Objects.equals(child.getId(), "continueButton")) {
+                    child.setVisible(false);
+                    break;
+                }
+            }
+            boolean gameOver = false;
+            if (!gameOver) {
+                gameState = resetGameStateBetweenPlayers(gameState);
+            } else {
             // TODO
-            // next player
-            // // write points to sheet and player
-            // // reset gamestate
-            // or next game
+            // next game
             // // load new game
             // // new gamestate
+            }
         } else {
             if (controller.isRolled()) {
                 for (Node child : controller.dicePane.getChildren()) {
@@ -66,8 +76,10 @@ public class RunningGame extends Game {
                     }
                 }
             }
-            Functions.updateActiveDice(gameState, allDiceList);
+            Functions.updateActiveDice(gameState, allDiceList, controller.dicePane);
         }
         return gameState;
     }
+
+
 }
