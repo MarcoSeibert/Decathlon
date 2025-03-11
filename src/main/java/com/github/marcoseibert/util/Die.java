@@ -18,7 +18,7 @@ import java.util.Random;
 public class Die extends ImageView {
     protected static final Logger logger = LogManager.getLogger(Die.class.getSimpleName());
     private final Random ran = new Random();
-    int value = 1;
+    private int value = 1;
     private boolean active = false;
 
     public Die() {
@@ -77,5 +77,9 @@ public class Die extends ImageView {
 
     public void setActive(boolean b) {
         active = b;
+    }
+
+    public int getValue() {
+        return value;
     }
 }

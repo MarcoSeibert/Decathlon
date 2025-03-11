@@ -3,12 +3,13 @@ package com.github.marcoseibert.util;
 import com.github.marcoseibert.controller.MainController;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class Game {
 
     protected Game(){
     }
 
-    public abstract Map<String, String> playGame(Map<String, String> gameState, MainController controller);
+    public abstract AtomicReference<Map<String, String>> playGame(AtomicReference<Map<String, String>> gameState, MainController controller);
 }
 

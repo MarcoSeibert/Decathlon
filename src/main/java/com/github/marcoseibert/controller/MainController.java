@@ -2,6 +2,7 @@ package com.github.marcoseibert.controller;
 import com.github.marcoseibert.MainScene;
 import com.github.marcoseibert.util.Die;
 
+import com.github.marcoseibert.util.Functions;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.ImageCursor;
@@ -18,11 +19,20 @@ import javafx.scene.text.Font;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class MainController {
     protected static final Logger logger = LogManager.getLogger(MainController.class.getSimpleName());
+
+    private AtomicReference<Map<String, String>> gameState;
+    private static final String THISROUNDSCORE = "thisRoundScore";
+
+    private boolean rolled = false;
     @FXML
     public GridPane scoreSheet;
     @FXML
@@ -31,6 +41,12 @@ public class MainController {
     public Label title;
     @FXML
     public Button rollButton;
+    @FXML
+    public Button continueButton;
+    @FXML
+    public Label rerollLabel;
+    @FXML
+    public Label scoreLabel;
 
     public void initialize() {
         logger.debug("Initializing score pad");
@@ -63,34 +79,108 @@ public class MainController {
         logger.debug("Initializing dice");
         for (int i=0; i < 8; i++) {
             Die die = new Die();
-            dicePane.add(die, i%2, i/2);
+            dicePane.add(die, i%2, i/2 + 2);
         }
     }
 
     public void rollActiveDice(MouseEvent mouseEvent) {
         if (mouseEvent.getButton() == MouseButton.PRIMARY){
-            logger.debug("Rolling the dice");
-            for (Node child:dicePane.getChildren()) {
-                if (child instanceof Die die && die.isActive()) {
-                    die.rollDie();
+            gameState = MainScene.getGameState();
+            if (!rolled) {
+                logger.debug("Rolling the dice");
+                rolled = true;
+                for (Node child:dicePane.getChildren()){
+                    if (Objects.equals(child.getId(), "continueButton")){
+                        child.setVisible(true);
+                        break;
+                    }
+                }
+            } else {
+                logger.debug("Rerolling the dice");
+                int oldRerolls = Integer.parseInt(gameState.get().get("remainingRerolls"));
+                gameState.get().put("remainingRerolls", String.valueOf(oldRerolls - 1));
+            }
+            int thisRoundScore = getThisRoundScore();
+            gameState.get().put(THISROUNDSCORE, String.valueOf(thisRoundScore));
+            MainScene.setGameState(gameState);
+
+        }
+
+    }
+
+    private int getThisRoundScore() {
+        int thisRoundScore = 0;
+        for (Node child : dicePane.getChildren()) {
+            if (child instanceof Die die && die.isActive()) {
+                die.rollDie();
+                int dieValue = die.getValue();
+                if (String.valueOf(dieValue).equals(gameState.get().get("foulValue"))){
+                    thisRoundScore -= die.getValue();
+                } else {
+                    thisRoundScore += die.getValue();
                 }
             }
         }
-
+        return thisRoundScore;
     }
 
     // Change cursor upon clicking the roll button
     public void setCursorDown(MouseEvent mouseEvent) {
         if (mouseEvent.getButton() == MouseButton.PRIMARY) {
             Image cursorDown = new Image("/images/finger_down.png");
-            rollButton.setCursor(new ImageCursor(cursorDown));
+            Button clickedButton = getClickedButton(mouseEvent);
+            clickedButton.setCursor(new ImageCursor(cursorDown));
         }
     }
     public void setCursorUp(MouseEvent mouseEvent) {
         if (mouseEvent.getButton() == MouseButton.PRIMARY) {
             Image cursorUp = new Image("/images/finger_up.png");
-            rollButton.setCursor(new ImageCursor(cursorUp));
+            Button clickedButton = getClickedButton(mouseEvent);
+            clickedButton.setCursor(new ImageCursor(cursorUp));
         }
     }
 
+    private Button getClickedButton(MouseEvent mouseEvent){
+        Node clickedNode = mouseEvent.getPickResult().getIntersectedNode();
+        if (clickedNode instanceof Button button){
+            return button;
+        } else {
+            return (Button) clickedNode.getParent();
+        }
+    }
+
+    public boolean isRolled() {
+        return rolled;
+    }
+
+    public void nextRound(MouseEvent mouseEvent) {
+        if (mouseEvent.getButton() == MouseButton.PRIMARY) {
+            gameState = MainScene.getGameState();
+            int currentRound = Integer.parseInt(gameState.get().get("round"));
+            int maxRounds = Integer.parseInt(gameState.get().get("nrRounds"));
+            gameState.get().put("round", String.valueOf(currentRound + 1));
+            gameState.get().put("nextRound", "true");
+            int previousRoundsScore = Integer.parseInt(gameState.get().get("previousRoundsScore"));
+            int thisRoundScore = Integer.parseInt(gameState.get().get(THISROUNDSCORE));
+            gameState.get().put("previousRoundsScore", String.valueOf(previousRoundsScore + thisRoundScore));
+            if (currentRound + 1 == maxRounds){
+                for (Node child:dicePane.getChildren()){
+                    if (Objects.equals(child.getId(), "continueButton")){
+                        child.setDisable(true);
+                    }
+                }
+            } else {
+                List<Die> allDiceList = new ArrayList<>();
+                for (Node child:dicePane.getChildren()) {
+                    if (child instanceof Die die) {
+                        allDiceList.add(die);
+                    }
+                }
+                Functions.updateActiveDice(gameState, allDiceList);
+                int thisRoundScoreNextRound = getThisRoundScore();
+                gameState.get().put(THISROUNDSCORE, String.valueOf(thisRoundScoreNextRound));
+            }
+            MainScene.setGameState(gameState);
+        }
+    }
 }

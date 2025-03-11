@@ -10,6 +10,7 @@ import javafx.scene.ImageCursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
@@ -28,10 +29,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 
@@ -43,6 +41,7 @@ public class MainScene {
     private static final Logger logger = LogManager.getLogger(MainScene.class.getSimpleName());
     private static int nrOfPlayers;
     private static List<Player> playersList;
+    private static AtomicReference<Map<String, String>> gameState = new AtomicReference<>(new HashMap<>());
 
 
     private static final Map<Integer, Map<String, String>> runningGamesParametersMap = new HashMap<>();
@@ -102,7 +101,6 @@ public class MainScene {
             JSONObject gameObject = jsonGamesList.getJSONObject(gameId);
             String gameName = gameObject.getString("name");
             String gameCategory = gameObject.getString("category");
-            String foulValue;
 
             switch (gameCategory) {
                 case RUNNING:
@@ -111,10 +109,8 @@ public class MainScene {
 
                     String groupsOfDice = String.valueOf(gameObject.getInt("groups of dice"));
                     String dicePerGroup = String.valueOf(gameObject.getInt("dice per group"));
-                    foulValue = String.valueOf(gameObject.getInt("foul value"));
                     runningGameParametersMap.put("groups", groupsOfDice);
                     runningGameParametersMap.put("dicePerGroup", dicePerGroup);
-                    runningGameParametersMap.put("foulValue", foulValue);
 
                     runningGamesParametersMap.put(gameId, runningGameParametersMap);
                     gameCategoryMap.put(gameId, RUNNING);
@@ -126,10 +122,8 @@ public class MainScene {
 
                     String minDice = String.valueOf(gameObject.getInt("min number of dice"));
                     String maxDice = String.valueOf(gameObject.getInt("max number of dice"));
-                    foulValue = String.valueOf(gameObject.getInt("foul value"));
                     highJumpingGameParametersMap.put("minDice", minDice);
                     highJumpingGameParametersMap.put("maxDice", maxDice);
-                    highJumpingGameParametersMap.put("foulValue", foulValue);
 
                     highJumpingGamesParametersMap.put(gameId, highJumpingGameParametersMap);
                     gameCategoryMap.put(gameId, HIGHJUMPING);
@@ -157,7 +151,7 @@ public class MainScene {
         }
 
         // Launch background tasks
-        Timeline backgroundTasks = getBackgorundTasksTimeline(scoreSheet, playerPointsMap);
+        Timeline backgroundTasks = getBackgorundTasksTimeline(scoreSheet, controller.dicePane, playerPointsMap);
         Timeline runningGames = getRunningGameTimeline(controller);
         backgroundTasks.play();
         runningGames.play();
@@ -166,35 +160,40 @@ public class MainScene {
 
     private static Timeline getRunningGameTimeline(MainController controller) {
         Game game;
-        AtomicReference<Map<String, String>> gameState = new AtomicReference<>(new HashMap<>());
         gameState.get().put("round", "0");
         gameState.get().put("activePlayer", "0");
-        gameState.get().put("currentScore", "0");
+        gameState.get().put("previousRoundsScore", "0");
+        gameState.get().put("thisRoundScore", "0");
+        gameState.get().put("nextRound", "false");
         String activeGameCategory = gameCategoryMap.get(activeGame);
         switch (activeGameCategory){
             case RUNNING -> {
                 Map<String, String> activeGameMap = runningGamesParametersMap.get(activeGame);
                 String name = activeGameMap.get("name");
                 String nrDice = activeGameMap.get("dicePerGroup");
+                String nrRounds = activeGameMap.get("groups");
                 gameState.get().put("name", name);
                 gameState.get().put("nrDice", nrDice);
                 gameState.get().put("remainingRerolls", "5");
-
-                game = new RunningGame();
+                gameState.get().put("nrRounds", nrRounds);
+                if (!Objects.equals(name, "110 m hurdles")){
+                    gameState.get().put("foulValue", "6");
+                } else {
+                    gameState.get().put("foulValue", null);
+                }
+                logger.debug("Starting the game: {}", name);
+                game = new RunningGame(controller);
             }
             default -> game = new RestGame();
         }
 
-        Timeline runningTasks = new Timeline(new KeyFrame(Duration.millis(100), _ -> {
-                gameState.set(game.playGame(gameState.get(), controller));
-            // run stuff
-        }));
+        Timeline runningTasks = new Timeline(new KeyFrame(Duration.millis(100), _ -> gameState.set(game.playGame(gameState, controller).get())));
         runningTasks.setCycleCount(Animation.INDEFINITE);
-        logger.debug("Starting the game: {}", game);
+
         return runningTasks;
     }
 
-    private static Timeline getBackgorundTasksTimeline(GridPane scoreSheet, HashMap<Integer, Map<Integer, TextField>> playerPointsMap) {
+    private static Timeline getBackgorundTasksTimeline(GridPane scoreSheet, GridPane dicePane, HashMap<Integer, Map<Integer, TextField>> playerPointsMap) {
         // Highlight on the first game
         Rectangle highlightGame = new Rectangle();
         highlightGame.setFill(Color.BLUEVIOLET);
@@ -225,8 +224,35 @@ public class MainScene {
             }
 
             // Highlight on the active game
-            GridPane.setConstraints(highlightGame,0,activeGame + 2);
+            GridPane.setConstraints(highlightGame,0,activeGame + 1);
 
+            // Set the remaining rerolls
+            String remainingRerolls = getGameState().get().get("remainingRerolls");
+            for (Node child:dicePane.getChildren()){
+                if (Objects.equals(child.getId(), "rerollLabel")){
+                    ((Label) child).setText("Rerolls: " + remainingRerolls);
+                    break;
+                }
+            }
+            if (Objects.equals(remainingRerolls, "0")){
+                for (Node child:dicePane.getChildren()){
+                    if (Objects.equals(child.getId(), "rollButton")){
+                        child.setDisable(true);
+                        break;
+                    }
+                }
+            }
+
+            // Show the current score
+            int previousRoundsScore = Integer.parseInt(getGameState().get().get("previousRoundsScore"));
+            int thisRoundScore = Integer.parseInt(getGameState().get().get("thisRoundScore"));
+            String currentScore = String.valueOf(previousRoundsScore + thisRoundScore);
+            for (Node child:dicePane.getChildren()){
+                if (Objects.equals(child.getId(), "scoreLabel")){
+                    ((Label) child).setText("Current score: " + currentScore);
+                    break;
+                }
+            }
 
         }));
         backgroundTasks.setCycleCount(Animation.INDEFINITE);
@@ -251,6 +277,14 @@ public class MainScene {
         sprites.add(animSprites);
 
         return sprites;
+    }
+
+    public static AtomicReference<Map<String, String>> getGameState() {
+        return gameState;
+    }
+
+    public static void setGameState(AtomicReference<Map<String, String>> gameState) {
+        MainScene.gameState = gameState;
     }
 
     public static int getNrOfPlayers(){

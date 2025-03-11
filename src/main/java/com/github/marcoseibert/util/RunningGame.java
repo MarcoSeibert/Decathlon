@@ -1,20 +1,26 @@
 package com.github.marcoseibert.util;
 
 import com.github.marcoseibert.controller.MainController;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class RunningGame extends Game {
-    protected static final Logger logger = LogManager.getLogger(RunningGame.class.getSimpleName());
+    protected static final List<Die> allDiceList = new ArrayList<>();
 
-    public RunningGame() {
+    public RunningGame(MainController controller) {
         super();
+        for (Node child:controller.dicePane.getChildren()) {
+            if (child instanceof Die die) {
+                allDiceList.add(die);
+            }
+        }
     }
 
     @Override
-    public Map<String, String> playGame(Map<String, String> gameState, MainController controller) {
+    public AtomicReference<Map<String, String>> playGame(AtomicReference<Map<String, String>> gameState, MainController controller) {
         // Regeln:
         // z.B. 100m
         // 4 Würfel (weiß) / 4 Würfel (grau)
@@ -36,9 +42,32 @@ public class RunningGame extends Game {
 
         // playGame wird alle 100 ms aufgerufen
         // status map, die jedes Mal übergegeben und angepasst wird?
-        // "dice": 4 (fixed per game, also eher nicht in map?), "round": 1, "active_player": 0/name, "current_score": 0, "remaining_rerolls": 5
-        logger.debug(controller.dicePane.getChildren().getFirst().getId());
+        // "dice": 4 (fixed per game, also eher nicht in map?), "round": 1, "active_player": 0/name, "previous_rounds_score": 0, "this_round_score": 0, "remaining_rerolls": 5
+        if (Objects.equals(gameState.get().get("nrRounds"), gameState.get().get("round"))){
+            for (Node child : controller.dicePane.getChildren()) {
+                if (Objects.equals(child.getId(), "rollButton")) {
+                    ((Button) child).setText("Roll");
+                    break;
+                }
+            }
+            // TODO
+            // next player
+            // // write points to sheet and player
+            // // reset gamestate
+            // or next game
+            // // load new game
+            // // new gamestate
+        } else {
+            if (controller.isRolled()) {
+                for (Node child : controller.dicePane.getChildren()) {
+                    if (Objects.equals(child.getId(), "rollButton")) {
+                        ((Button) child).setText("Reroll");
+                        break;
+                    }
+                }
+            }
+            Functions.updateActiveDice(gameState, allDiceList);
+        }
         return gameState;
     }
-
 }
