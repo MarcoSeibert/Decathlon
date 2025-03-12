@@ -296,4 +296,12 @@ public class MainScene {
     public static List<Die> getStartDiceList() {
         return START_DICE_LIST;
     }
+
+    public static Map<String, String> getGameState() {
+        return gameState;
+    }
+
+    public static void setGameState(Map<String, String> gameStateInput) {
+        gameState = gameStateInput;
+    }
 }

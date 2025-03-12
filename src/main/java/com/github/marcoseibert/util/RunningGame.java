@@ -1,7 +1,6 @@
 package com.github.marcoseibert.util;
-
-import com.github.marcoseibert.MainScene;
 import com.github.marcoseibert.controller.MainController;
+
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 
@@ -15,9 +14,6 @@ public class RunningGame extends Game {
 
     @Override
     public void playGame(Map<String, String> gameState, MainController controller, Map<String, String> gamesParameterMap) {
-//        int currentRound = Integer.parseInt(gameState.get("round"));
-//        int maxRounds = Integer.parseInt(gameState.get("nrRounds"));
-
         // happens after last round finished, cleanup,
         //      Reroll->Roll auf RollButton
         //      WritePoints
@@ -36,7 +32,8 @@ public class RunningGame extends Game {
 //            }
 //            Functions.updateActiveDice(gameState, MainScene.getStartDiceList(), controller.dicePane);
 //
+        }
+
+
     }
-
-
 }

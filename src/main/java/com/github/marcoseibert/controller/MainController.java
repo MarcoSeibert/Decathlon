@@ -3,7 +3,6 @@ import com.github.marcoseibert.MainScene;
 import com.github.marcoseibert.util.Die;
 import com.github.marcoseibert.util.Functions;
 
-import com.github.marcoseibert.util.Functions;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -41,10 +40,10 @@ public class MainController {
     public Button rollButton;
     @FXML
     public Button continueButton;
+    @FXML
     public Label rerollLabel;
     @FXML
     public Label scoreLabel;
-    @FXML
     @FXML
     public ImageView running100;
     @FXML
@@ -104,7 +103,6 @@ public class MainController {
         poleVault.setViewport(new Rectangle2D(SPRITE_SIZE, SPRITE_SIZE, SPRITE_SIZE, SPRITE_SIZE));
         javelin.setViewport(new Rectangle2D(3 * SPRITE_SIZE,0, SPRITE_SIZE, SPRITE_SIZE));
         running1500.setViewport(runningRect);
-        logger.debug("Initializing dice");
         for (int i=0; i < 8; i++) {
             Die die = new Die();
             die.setVisible(false);
