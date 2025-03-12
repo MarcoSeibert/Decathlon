@@ -17,6 +17,9 @@ public class Die extends ImageView {
     private final Random ran = new Random();
     private int value = 1;
     private boolean active = false;
+    private boolean frozen = false;
+    private boolean grayed = false;
+    private boolean foul = false;
 
     public Die() {
         Image dieSprite = new Image("/images/die1.png");

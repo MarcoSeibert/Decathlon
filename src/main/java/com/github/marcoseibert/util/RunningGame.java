@@ -6,7 +6,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class RunningGame extends Game {
 
@@ -15,43 +14,28 @@ public class RunningGame extends Game {
     }
 
     @Override
-    public AtomicReference<Map<String, String>> playGame(AtomicReference<Map<String, String>> gameState, MainController controller, Map<String, String> gamesParameterMap) {
-        //
-        if (Objects.equals(gameState.get().get("nrRounds"), gameState.get().get("round"))){
+    public void playGame(Map<String, String> gameState, MainController controller, Map<String, String> gamesParameterMap) {
+//        int currentRound = Integer.parseInt(gameState.get("round"));
+//        int maxRounds = Integer.parseInt(gameState.get("nrRounds"));
+
+        // happens after last round finished, cleanup,
+        //      Reroll->Roll auf RollButton
+        //      WritePoints
+        //      setRolled Flag -> False
+        //      continueButton visible = false
+        //      check if current player was last player
+        // => nicht hier, passiert nach jedem Spiel, nicht nur running
+
+        if (controller.isRolled()) {
             for (Node child : controller.dicePane.getChildren()) {
                 if (Objects.equals(child.getId(), "rollButton")) {
-                    ((Button) child).setText("Roll");
+                    ((Button) child).setText("Reroll");
                     break;
                 }
             }
-            writePointsInScoreSheet(gameState);
-            controller.setRolled(false);
-            for (Node child : controller.dicePane.getChildren()) {
-                if (Objects.equals(child.getId(), "continueButton")) {
-                    child.setVisible(false);
-                    break;
-                }
-            }
-            int activePlayer = Integer.parseInt(gameState.get().get("activePlayer"));
-            int nrOfPlayers = MainScene.getPlayersList().size();
-            boolean gameOver = (activePlayer + 1 == nrOfPlayers);
-            if (!gameOver) {
-                gameState = resetGameStateBetweenPlayers(gameState);
-            } else {
-                System.out.println("GameOver");
-            }
-        } else {
-            if (controller.isRolled()) {
-                for (Node child : controller.dicePane.getChildren()) {
-                    if (Objects.equals(child.getId(), "rollButton")) {
-                        ((Button) child).setText("Reroll");
-                        break;
-                    }
-                }
-            }
-            Functions.updateActiveDice(gameState, MainScene.getStartDiceList(), controller.dicePane);
-        }
-        return gameState;
+//            }
+//            Functions.updateActiveDice(gameState, MainScene.getStartDiceList(), controller.dicePane);
+//
     }
 
 

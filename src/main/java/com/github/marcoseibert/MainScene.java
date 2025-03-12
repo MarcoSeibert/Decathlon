@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 
 public class MainScene {
@@ -39,12 +38,14 @@ public class MainScene {
     private static final String PARITY = "parity";
     private static int nrOfPlayers;
     private static List<Player> playersList;
-    private static AtomicReference<Map<String, String>> gameState = new AtomicReference<>(new HashMap<>());
+    private static Map<String, String> gameState = new HashMap<>();
     private static final HashMap<Integer, Map<Integer, TextField>> playerPointsMap = new HashMap<>();
     private static final Map<Integer, Map<String, String>> gamesParameterMap = new HashMap<>();
     protected static final List<Die> START_DICE_LIST = new ArrayList<>();
+    private static Game game;
+    private static Map<String, String> activeGameMap;
 
-    private static int activeGame = 0;
+    private static int activeGameId = 0;
 
     private MainScene(){
     }
@@ -66,6 +67,7 @@ public class MainScene {
 
         createPlayerPointsMap(controller);
         createGamesParameterMap();
+        initGameState();
 
         // Launch task
         Timeline timeLine = getTimeLine(controller);
@@ -143,36 +145,18 @@ public class MainScene {
     }
 
     private static Timeline getTimeLine(MainController controller) {
-        initGameState();
-        return getTasks(controller);
-    }
-
-    private static Timeline getTasks(MainController controller) {
         Timeline runningTasks = new Timeline(new KeyFrame(Duration.millis(100), _ -> {
-            Map<String, String> activeGameMap = gamesParameterMap.get(activeGame);
-            Game game = null;
-            if (Objects.equals(gameState.get().get("gameOver"), "true")) {
-                // TODO switch für unterschiedliche categories
+            if (Objects.equals(gameState.get("gameOver"), "true")) {
+                activeGameMap = gamesParameterMap.get(activeGameId);
                 createStartingDice(controller, activeGameMap);
-                showStartingDice(controller);
+                // TODO switch für unterschiedliche categories
                 game = new RunningGame();
             }
-            gameState = game.playGame(gameState, controller, activeGameMap);
+            game.playGame(gameState, controller, activeGameMap);
 
         }));
         runningTasks.setCycleCount(Animation.INDEFINITE);
         return runningTasks;
-    }
-
-    private static void showStartingDice(MainController controller) {
-        int shownDice = 0;
-        for (Node child:controller.dicePane.getChildren()){
-            if (child instanceof Die die){
-                die.setVisible(true);
-                shownDice += 1;
-            }
-            if (shownDice == START_DICE_LIST.size()){break;}
-        }
     }
 
     private static void createStartingDice(MainController controller, Map<String, String> activeGameMap) {
@@ -198,6 +182,7 @@ public class MainScene {
         for (Node child: controller.dicePane.getChildren()) {
             if (child instanceof Die die) {
                 START_DICE_LIST.add(die);
+                die.setVisible(true);
             }
             if (START_DICE_LIST.size() == initDice){
                 break;
@@ -207,18 +192,18 @@ public class MainScene {
 
     private static void initGameState() {
         // General attributes for game state
-        gameState.get().put("gameId", "0");
-        gameState.get().put("activePlayer", "0");
-        gameState.get().put("gameOver", "true");
-        gameState.get().put("score", "0");
-        gameState.get().put("lastAchieved", "0"); //previousRound for running, lastHeight for jumping, lastDistance for throwing
-        gameState.get().put("nextTry", "false"); //nextRound for running, nextHeight for jumping
-        gameState.get().put("currentAttempt", "0"); // for jumping, throwing and rest
+        gameState.put("gameId", "0");
+        gameState.put("activePlayer", "0");
+        gameState.put("gameOver", "true");
+        gameState.put("score", "0");
+        gameState.put("lastAchieved", "0"); //previousRoundScore for running, lastHeight for jumping, lastDistance for throwing
+        gameState.put("nextTry", "false"); //nextRound for running, nextHeight for jumping
+        gameState.put("currentAttempt", "0"); // for jumping, throwing and rest
         // Attributes for running games
-        gameState.get().put("round", "0");
-        gameState.get().put("thisRoundScore", "0");
+        gameState.put("round", "0");
+        gameState.put("thisRoundScore", "0");
         // Attributes for jumping games
-        gameState.get().put("currentHeight", "10");
+        gameState.put("currentHeight", "10");
         // Attributes for throwing games
         // TODO
         // Attributes for the two rest games
@@ -311,11 +296,11 @@ public class MainScene {
         return sprites;
     }
 
-    public static AtomicReference<Map<String, String>> getGameState() {
+    public static Map<String, String> getGameState() {
         return gameState;
     }
 
-    public static void setGameState(AtomicReference<Map<String, String>> gameState) {
+    public static void setGameState(Map<String, String> gameState) {
         MainScene.gameState = gameState;
     }
 

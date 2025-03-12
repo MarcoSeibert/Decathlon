@@ -7,14 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class Functions {
     private Functions(){
             }
-    public static void updateActiveDice(AtomicReference<Map<String, String>> gameState, List<Die> allDiceList, GridPane dicePane){
-        int nrDice = Integer.parseInt(gameState.get().get("nrDice"));
-        int round = Integer.parseInt(gameState.get().get("round"));
+    public static void updateActiveDice(Map<String, String> gameState, List<Die> allDiceList, GridPane dicePane){
+        int nrDice = Integer.parseInt(gameState.get("nrDice"));
+        int round = Integer.parseInt(gameState.get("round"));
         for (Die die:allDiceList){die.setActive(false);}
         List<Die> activeDiceList = new ArrayList<>();
         for (int i = 0; i < nrDice; i++){

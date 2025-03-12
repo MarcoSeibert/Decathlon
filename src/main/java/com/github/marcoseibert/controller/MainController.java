@@ -20,12 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 
 
 public class MainController {
 
-    private AtomicReference<Map<String, String>> gameState;
+    private Map<String, String> gameState;
     private static final String THISROUNDSCORE = "thisRoundScore";
 
     private boolean rolled = false;
@@ -90,11 +89,11 @@ public class MainController {
                     }
                 }
             } else {
-                int oldRerolls = Integer.parseInt(gameState.get().get("remainingRerolls"));
-                gameState.get().put("remainingRerolls", String.valueOf(oldRerolls - 1));
+                int oldRerolls = Integer.parseInt(gameState.get("remainingRerolls"));
+                gameState.put("remainingRerolls", String.valueOf(oldRerolls - 1));
             }
             int thisRoundScore = getThisRoundScore();
-            gameState.get().put(THISROUNDSCORE, String.valueOf(thisRoundScore));
+            gameState.put(THISROUNDSCORE, String.valueOf(thisRoundScore));
             MainScene.setGameState(gameState);
         }
     }
@@ -105,7 +104,7 @@ public class MainController {
             if (child instanceof Die die && die.isActive()) {
                 die.rollDie();
                 int dieValue = die.getValue();
-                if (String.valueOf(dieValue).equals(gameState.get().get("foulValue"))){
+                if (String.valueOf(dieValue).equals(gameState.get("foulValue"))){
                     thisRoundScore -= die.getValue();
                 } else {
                     thisRoundScore += die.getValue();
@@ -151,13 +150,13 @@ public class MainController {
     public void nextRound(MouseEvent mouseEvent) {
         if (mouseEvent.getButton() == MouseButton.PRIMARY) {
             gameState = MainScene.getGameState();
-            int currentRound = Integer.parseInt(gameState.get().get("round"));
-            int maxRounds = Integer.parseInt(gameState.get().get("nrRounds"));
-            gameState.get().put("round", String.valueOf(currentRound + 1));
-            gameState.get().put("nextRound", "true");
-            int previousRoundsScore = Integer.parseInt(gameState.get().get("previousRoundsScore"));
-            int thisRoundScore = Integer.parseInt(gameState.get().get(THISROUNDSCORE));
-            gameState.get().put("previousRoundsScore", String.valueOf(previousRoundsScore + thisRoundScore));
+            int currentRound = Integer.parseInt(gameState.get("round"));
+            int maxRounds = Integer.parseInt(gameState.get("nrRounds"));
+            gameState.put("round", String.valueOf(currentRound + 1));
+            gameState.put("nextRound", "true");
+            int previousRoundsScore = Integer.parseInt(gameState.get("previousRoundsScore"));
+            int thisRoundScore = Integer.parseInt(gameState.get(THISROUNDSCORE));
+            gameState.put("previousRoundsScore", String.valueOf(previousRoundsScore + thisRoundScore));
             if (currentRound + 1 == maxRounds) {
                 //TODO
             } else {
@@ -169,7 +168,7 @@ public class MainController {
                     }
                 Functions.updateActiveDice(gameState, allDiceList, dicePane);
                 int thisRoundScoreNextRound = getThisRoundScore();
-                gameState.get().put(THISROUNDSCORE, String.valueOf(thisRoundScoreNextRound));
+                gameState.put(THISROUNDSCORE, String.valueOf(thisRoundScoreNextRound));
                 }
             MainScene.setGameState(gameState);
         }
