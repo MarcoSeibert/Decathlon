@@ -32,10 +32,10 @@ import java.util.*;
 
 
 public class MainScene {
-    private static final String RUNNING = "Running";
-    private static final String THROWING = "Throwing";
-    private static final String HIGHJUMPING = "HighJumping";
-    private static final String REST = "Rest";
+    private static final String RUNNING = "running";
+    private static final String THROWING = "throwing";
+    private static final String HIGHJUMPING = "highJumping";
+    private static final String REST = "rest";
     private static final String CATEGORY = "category";
     private static final String PARITY = "parity";
     private static int nrOfPlayers;
@@ -43,7 +43,6 @@ public class MainScene {
     private static Map<String, String> gameState = new HashMap<>();
     private static final HashMap<Integer, Map<Integer, TextField>> playerPointsMap = new HashMap<>();
     private static final Map<Integer, Map<String, String>> gamesParameterMap = new HashMap<>();
-    protected static final List<Die> START_DICE_LIST = new ArrayList<>();
     private static Game game;
     private static Map<String, String> activeGameMap;
 
@@ -76,6 +75,44 @@ public class MainScene {
         timeLine.play();
     }
 
+    private static Timeline getTimeLine(MainController controller) {
+        Timeline runningTasks = new Timeline(new KeyFrame(Duration.millis(100), _ -> {
+            if (Objects.equals(gameState.get("gameOver"), "true")) {
+                activeGameMap = gamesParameterMap.get(activeGameId);
+                // TODO switch für unterschiedliche categories
+                game = new RunningGame(controller, activeGameMap);
+                gameState.put("gameOver", "false");
+            }
+            doBackgroundTasks(controller);
+            game.playGame();
+
+        }));
+        runningTasks.setCycleCount(Animation.INDEFINITE);
+        return runningTasks;
+    }
+
+    private static void doBackgroundTasks(MainController controller){
+        // Update the total score of the players
+        for (int i = 0; i < nrOfPlayers; i++){
+            int totalScore = 0;
+            for (int j = 2; j < 12; j++){
+                try {
+                    totalScore += Integer.parseInt(playerPointsMap.get(i + 1).get(j).getText());
+                } catch (NumberFormatException e) {
+                    totalScore += 0;
+                }
+            }
+            playerPointsMap.get(i+1).get(12).setText(String.valueOf(totalScore));
+        }
+        for (int i = 0; i < nrOfPlayers; i++){
+            int totalScore = playersList.get(i).getTotalPoints();
+            playerPointsMap.get(i+1).get(12).setText(String.valueOf(totalScore));
+        }
+
+        // Highlight on the active game
+        GridPane.setConstraints(controller.highlightGame,0, Integer.parseInt(gameState.get("gameId")) + 2);
+    }
+
     private static void createPlayerPointsMap(MainController controller) {
         // Creating a map for every player and every game to access the points within
         for (int i = 0; i < nrOfPlayers; i++){
@@ -89,9 +126,6 @@ public class MainScene {
                 int gameNr = GridPane.getRowIndex(child);
                 Map<Integer, TextField> gameMap = playerPointsMap.get(playerNr);
                 gameMap.put(gameNr, textField);
-                if (gameNr == 1){
-                    textField.setText(playersList.get(playerNr-1).getName());
-                }
             }
         }
     }
@@ -146,52 +180,6 @@ public class MainScene {
         }
     }
 
-    private static Timeline getTimeLine(MainController controller) {
-        Timeline runningTasks = new Timeline(new KeyFrame(Duration.millis(100), _ -> {
-            if (Objects.equals(gameState.get("gameOver"), "true")) {
-                activeGameMap = gamesParameterMap.get(activeGameId);
-                createStartingDice(controller, activeGameMap);
-                // TODO switch für unterschiedliche categories
-                game = new RunningGame();
-            }
-            game.playGame(gameState, controller, activeGameMap);
-
-        }));
-        runningTasks.setCycleCount(Animation.INDEFINITE);
-        return runningTasks;
-    }
-
-    private static void createStartingDice(MainController controller, Map<String, String> activeGameMap) {
-        int initDice = 0;
-        String category = activeGameMap.get(CATEGORY);
-        switch (category){
-            case RUNNING:
-                initDice = Integer.parseInt(activeGameMap.get("dicePerGroup"));
-                break;
-            case THROWING:
-                initDice = Integer.parseInt(activeGameMap.get("nrDice"));
-                break;
-            case HIGHJUMPING:
-                initDice = Integer.parseInt(activeGameMap.get("minDice"));
-                break;
-            default:
-                if (Objects.equals(activeGameMap.get("name"), "Shot Put")){
-                    initDice = 1;
-                } else if (Objects.equals(activeGameMap.get("name"), "Long jump")){
-                    initDice = 5;
-                }
-        }
-        for (Node child: controller.dicePane.getChildren()) {
-            if (child instanceof Die die) {
-                START_DICE_LIST.add(die);
-                die.setVisible(true);
-            }
-            if (START_DICE_LIST.size() == initDice){
-                break;
-            }
-        }
-    }
-
     private static void initGameState() {
         // General attributes for game state
         gameState.put("gameId", "0");
@@ -212,39 +200,6 @@ public class MainScene {
         // TODO
     }
 
-    private static Timeline getBackgorundTasksTimeline(GridPane scoreSheet, GridPane dicePane, HashMap<Integer, Map<Integer, TextField>> playerPointsMap) {
-        // Highlight on the first game
-        Rectangle highlightGame = new Rectangle();
-        highlightGame.setFill(Color.BLUEVIOLET);
-        highlightGame.setOpacity(0.25);
-        highlightGame.setHeight(64);
-        highlightGame.setWidth(64);
-        highlightGame.setArcHeight(10);
-        highlightGame.setArcWidth(10);
-        scoreSheet.add(highlightGame, 0, 2);
-        highlightGame.toBack();
-
-        Timeline backgroundTasks = new Timeline(new KeyFrame(Duration.millis(100), _ -> {
-            // Update the total score of the players
-            for (int i = 0; i < nrOfPlayers; i++){
-                int totalScore = 0;
-                for (int j = 2; j < 12; j++){
-                    try {
-                        totalScore += Integer.parseInt(playerPointsMap.get(i + 1).get(j).getText());
-                    } catch (NumberFormatException e) {
-                        totalScore += 0;
-                    }
-                }
-                playerPointsMap.get(i+1).get(12).setText(String.valueOf(totalScore));
-            }
-            for (int i = 0; i < nrOfPlayers; i++){
-                int totalScore = playersList.get(i).getTotalPoints();
-                playerPointsMap.get(i+1).get(12).setText(String.valueOf(totalScore));
-            }
-
-//            // Highlight on the active game
-//            GridPane.setConstraints(highlightGame,0,activeGame + 2);
-//
 //            // Set the remaining rerolls
 //            String remainingRerolls = getGameState().get().get("remainingRerolls");
 //            for (Node child:dicePane.getChildren()){
@@ -273,14 +228,6 @@ public class MainScene {
 //                }
 //            }
 
-        }));
-        backgroundTasks.setCycleCount(Animation.INDEFINITE);
-        return backgroundTasks;
-    }
-
-    public static int getNrOfPlayers(){
-        return nrOfPlayers;
-    }
     public static void setNrOfPlayers(int i){
         nrOfPlayers = i;
     }
@@ -293,15 +240,4 @@ public class MainScene {
         return playersList;
     }
 
-    public static List<Die> getStartDiceList() {
-        return START_DICE_LIST;
-    }
-
-    public static Map<String, String> getGameState() {
-        return gameState;
-    }
-
-    public static void setGameState(Map<String, String> gameStateInput) {
-        gameState = gameStateInput;
-    }
 }

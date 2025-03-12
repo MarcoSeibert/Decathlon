@@ -1,0 +1,34 @@
+json
+    name
+    category
+    running     groups of dice
+    running     dice per group
+    jumping     min number of dice
+    jumping     max number of dice
+    throwing    parity
+    throwing    nr of dice
+
+gamesParameterMap   MainScene
+    {gameId, gameParameterMap}
+
+gameParameterMap    MainScene
+    gameId
+    name
+    category
+    groups
+    dicePerGroup
+    minDice
+    maxDice
+    nrDice
+    parity
+
+gameState           MainScene
+    gameId
+    activePlayer
+    gameOver    bool
+    lastAchieved
+    nextTry     bool
+    currentAttempt
+    round
+    thisRoundScore
+    currentHeight

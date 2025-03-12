@@ -19,7 +19,7 @@ public class StartScene extends Application {
         stageStart.show();
 
         // Set custom cursor
-        Cursor cursorUp = Functions.getCustomCursor("Up");
+        Cursor cursorUp = Functions.getCustomCursor("up");
         sceneStart.setCursor(cursorUp);
     }
 

@@ -1,0 +1,25 @@
+Running:
+    played in rounds per group
+    Reroll Button (solange noch rerolls da sind)
+    Next Round button (automatisches Würfeln der nächsten Würfel)
+    Falls rounds alle -> get points
+
+Long Jump:
+    Next nachdem min 1 Würfel gefreezt wurde (automatisches Würfeln der remaning Würfel)
+    Falls foul (freeze > 8) -> next attempt button, 0 points for attempt
+
+Shot Put:
+    Next button (automatisch nächster Würfel würfeln)
+    Stop button (get points for attempt)
+    Falls foul (1) -> next attempt button, 0 points for attempt
+
+HighJumping:
+    PoleVault: einstellbare Würfel Zahl
+    Reroll falls nicht geschafft (Höhe oder foul)
+    Next [oder Skip?] falls geschafft (automatisches Würfeln)
+    Fall rerolls alle -> get points
+
+Throwing:
+    Next nachdem min 1 Würfel gefreezt wurde (automatisches Würfeln der remaning Würfel)
+    Falls foul (nix zum freezen) -> next attempt button, 0 points for attempt
+    Stop button (get points for attempt)

@@ -4,6 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
 <AnchorPane id="AnchorPane" prefHeight="1000.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.marcoseibert.controller.MainController">
@@ -26,6 +27,7 @@
             <RowConstraints maxHeight="64.0" minHeight="64.0" prefHeight="64.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="64.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
+      <Rectangle fx:id="highlightGame" arcHeight="10.0" arcWidth="10.0" fill="BLUEVIOLET" height="64.0" opacity="0.25" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="64.0" GridPane.rowIndex="2" />
         <ImageView fx:id="running100" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="2">
             <Image url="@images/sportsSpriteSheet.png" />
         </ImageView>
@@ -82,12 +84,12 @@
         <padding>
             <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
         </padding>
-        <Button fx:id="rollButton" alignment="CENTER" mnemonicParsing="false" onMouseClicked="#rollActiveDice" onMousePressed="#setCursorDown" onMouseReleased="#setCursorUp" text="Roll" GridPane.halignment="CENTER" GridPane.rowIndex="6" GridPane.valignment="CENTER">
+        <Button fx:id="rollButton" alignment="CENTER" mnemonicParsing="false" onMouseClicked="#clickRollButton" onMousePressed="#setCursorDown" onMouseReleased="#setCursorUp" text="Roll" GridPane.halignment="CENTER" GridPane.rowIndex="6" GridPane.valignment="CENTER">
            <font>
                <Font name="Trebuchet MS" size="32.0" />
            </font>
         </Button>
-      <Button fx:id="continueButton" alignment="CENTER" layoutX="51.0" layoutY="590.0" mnemonicParsing="false" onMouseClicked="#nextRound" onMousePressed="#setCursorDown" onMouseReleased="#setCursorUp" text="Next" visible="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="6" GridPane.valignment="CENTER">
+      <Button fx:id="nextButton" alignment="CENTER" layoutX="51.0" layoutY="590.0" mnemonicParsing="false" onMouseClicked="#clickNextButton" onMousePressed="#setCursorDown" onMouseReleased="#setCursorUp" text="Next" visible="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="6" GridPane.valignment="CENTER">
          <font>
             <Font name="Trebuchet MS" size="32.0" />
          </font>

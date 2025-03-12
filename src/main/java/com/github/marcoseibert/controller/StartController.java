@@ -68,7 +68,7 @@ public class StartController {
             startButton.setCursor(cursorDown);
         }
     }
-    // Set custom curso for text fields
+    // Set custom cursor for text fields
     public void setCursorUp(MouseEvent mouseEvent) {
         GridPane gridPane = (GridPane) mouseEvent.getSource();
         Cursor cursorUp = Functions.getCustomCursor("up");
