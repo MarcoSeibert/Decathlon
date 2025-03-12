@@ -1,14 +1,14 @@
 package com.github.marcoseibert.controller;
 import com.github.marcoseibert.MainScene;
+import com.github.marcoseibert.util.Functions;
 
 import com.github.marcoseibert.util.Player;
 import javafx.fxml.FXML;
-import javafx.scene.ImageCursor;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -64,17 +64,17 @@ public class StartController {
     // Change cursor upon clicking the start button
     public void setCursorDown(MouseEvent mouseEvent) {
         if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-            Image cursorDown = new Image("/images/finger_down.png");
-            startButton.setCursor(new ImageCursor(cursorDown));
+            Cursor cursorDown = Functions.getCustomCursor("down");
+            startButton.setCursor(cursorDown);
         }
     }
     // Set custom curso for text fields
     public void setCursorUp(MouseEvent mouseEvent) {
         GridPane gridPane = (GridPane) mouseEvent.getSource();
-        Image cursorUp = new Image("/images/finger_up.png");
+        Cursor cursorUp = Functions.getCustomCursor("up");
         for (Node child:gridPane.getChildren()){
             if (child instanceof TextField textField){
-                textField.setCursor(new ImageCursor(cursorUp));
+                textField.setCursor(cursorUp);
             }
         }
     }

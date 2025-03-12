@@ -1,11 +1,9 @@
 package com.github.marcoseibert;
+import com.github.marcoseibert.util.Functions;
 
 import javafx.application.Application;
-import javafx.scene.ImageCursor;
-import javafx.scene.Scene;
-import javafx.scene.image.Image;
+import javafx.scene.*;
 import javafx.stage.Stage;
-import javafx.scene.Parent;
 import javafx.fxml.FXMLLoader;
 
 
@@ -21,8 +19,8 @@ public class StartScene extends Application {
         stageStart.show();
 
         // Set custom cursor
-        Image cursorUp = new Image("/images/finger_up.png");
-        sceneStart.setCursor(new ImageCursor(cursorUp));
+        Cursor cursorUp = Functions.getCustomCursor("Up");
+        sceneStart.setCursor(cursorUp);
     }
 
     public static void main(String[] args) {

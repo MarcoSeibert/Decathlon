@@ -6,24 +6,26 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.ImageCursor;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javafx.util.Duration;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -62,8 +64,8 @@ public class MainScene {
         MainController controller = loaderMain.getController();
 
         // Set custom cursor
-        Image cursorUp = new Image("/images/finger_up.png");
-        sceneMain.setCursor(new ImageCursor(cursorUp));
+        Cursor cursorUp = Functions.getCustomCursor("up");
+        sceneMain.setCursor(cursorUp);
 
         createPlayerPointsMap(controller);
         createGamesParameterMap();
@@ -274,34 +276,6 @@ public class MainScene {
         }));
         backgroundTasks.setCycleCount(Animation.INDEFINITE);
         return backgroundTasks;
-    }
-
-    public static List<Map<Integer, Image>> getSpriteMap() {
-        Map<Integer, Image> resultSprites = new HashMap<>();
-        Map<Integer, Image> animSprites = new HashMap<>();
-
-        for (int i = 0; i < 6; i++) {
-            Image dieSprite = new Image("images/die" + (i + 1) + ".png");
-            resultSprites.put(i, dieSprite);
-        }
-        for (int i = 0; i < 8; i++) {
-            Image dieSprite = new Image("images/ani" + (i + 1) + ".png");
-            animSprites.put(i, dieSprite);
-        }
-
-        List<Map<Integer, Image>> sprites = new ArrayList<>();
-        sprites.add(resultSprites);
-        sprites.add(animSprites);
-
-        return sprites;
-    }
-
-    public static Map<String, String> getGameState() {
-        return gameState;
-    }
-
-    public static void setGameState(Map<String, String> gameState) {
-        MainScene.gameState = gameState;
     }
 
     public static int getNrOfPlayers(){

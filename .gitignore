@@ -42,6 +42,4 @@ build/
 /log.txt
 /logs/
 
-### Sprite sheet ###
-/src/main/resources/images/die.png
 src/main/resources/CheatSheet.txt

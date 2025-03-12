@@ -26,35 +26,35 @@
             <RowConstraints maxHeight="64.0" minHeight="64.0" prefHeight="64.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="64.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
-        <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="2">
-            <Image url="@images/runner.png" />
+        <ImageView fx:id="running100" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="2">
+            <Image url="@images/sportsSpriteSheet.png" />
         </ImageView>
-        <ImageView fitHeight="64.0" fitWidth="64.0" layoutX="15.0" layoutY="68.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="6">
-            <Image url="@images/runner.png" />
+        <ImageView fx:id="running400" fitHeight="64.0" fitWidth="64.0" layoutX="15.0" layoutY="68.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="6">
+            <Image url="@images/sportsSpriteSheet.png" />
         </ImageView>
-        <ImageView fitHeight="64.0" fitWidth="64.0" layoutX="15.0" layoutY="379.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="11">
-            <Image url="@images/runner.png" />
+        <ImageView fx:id="running1500" fitHeight="64.0" fitWidth="64.0" layoutX="15.0" layoutY="379.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="11">
+            <Image url="@images/sportsSpriteSheet.png" />
         </ImageView>
-        <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="3">
-            <Image url="@images/long-jump.png" />
+        <ImageView fx:id="longJump" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="3">
+            <Image url="@images/sportsSpriteSheet.png" />
         </ImageView>
-        <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="4">
-            <Image url="@images/shot-put.png" />
+        <ImageView fx:id="shotPut" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="4">
+            <Image url="@images/sportsSpriteSheet.png" />
         </ImageView>
-        <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="5">
-            <Image url="@images/high-jump.png" />
+        <ImageView fx:id="highJump" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="5">
+            <Image url="@images/sportsSpriteSheet.png" />
         </ImageView>
-        <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="7">
-            <Image url="@images/hurdles.png" />
+        <ImageView fx:id="hurdles" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="7">
+            <Image url="@images/sportsSpriteSheet.png" />
         </ImageView>
-        <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="8">
-            <Image url="@images/discus.png" />
+        <ImageView fx:id="discus" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="8">
+            <Image url="@images/sportsSpriteSheet.png" />
         </ImageView>
-        <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="9">
-            <Image url="@images/pole-vault.png" />
+        <ImageView fx:id="poleVault" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="9">
+            <Image url="@images/sportsSpriteSheet.png" />
         </ImageView>
-        <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="10">
-            <Image url="@images/javelin.png" />
+        <ImageView fx:id="javelin" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="10">
+            <Image url="@images/sportsSpriteSheet.png" />
         </ImageView>
       <Label fx:id="title" text="Decathlon" GridPane.columnSpan="1" GridPane.rowIndex="0">
          <font>
