@@ -1,18 +1,21 @@
 package com.github.marcoseibert.controller;
 import com.github.marcoseibert.MainScene;
-
+import com.github.marcoseibert.util.Functions;
 import com.github.marcoseibert.util.Player;
+
 import javafx.fxml.FXML;
-import javafx.scene.ImageCursor;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,6 +23,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class StartController {
+    private static final Logger logger = LogManager.getLogger(StartController.class.getSimpleName());
 
     @FXML
     public ChoiceBox<String> playerNumberChoioceBox;
@@ -41,6 +45,7 @@ public class StartController {
                playerName.setPromptText("Player " + (i+1));
            }
        }
+       logger.debug("Setting players to {}", nrOfPlayers);
     }
 
     public void startTheGame(MouseEvent mouseEvent) throws IOException {
@@ -58,23 +63,27 @@ public class StartController {
         if (start) {
             Stage stageStart = (Stage) startButton.getScene().getWindow();
             MainScene.start(stageStart, playersList);
+            logger.debug("Starting with players:");
+            for (Player player:playersList) {
+                logger.debug("    {}", player.getName());
+            }
         }
     }
 
     // Change cursor upon clicking the start button
     public void setCursorDown(MouseEvent mouseEvent) {
         if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-            Image cursorDown = new Image("/images/finger_down.png");
-            startButton.setCursor(new ImageCursor(cursorDown));
+            Cursor cursorDown = Functions.getCustomCursor("down");
+            startButton.setCursor(cursorDown);
         }
     }
-    // Set custom curso for text fields
+    // Set custom cursor for text fields
     public void setCursorUp(MouseEvent mouseEvent) {
         GridPane gridPane = (GridPane) mouseEvent.getSource();
-        Image cursorUp = new Image("/images/finger_up.png");
+        Cursor cursorUp = Functions.getCustomCursor("up");
         for (Node child:gridPane.getChildren()){
             if (child instanceof TextField textField){
-                textField.setCursor(new ImageCursor(cursorUp));
+                textField.setCursor(cursorUp);
             }
         }
     }

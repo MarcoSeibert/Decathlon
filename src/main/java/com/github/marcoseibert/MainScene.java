@@ -6,54 +6,51 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.ImageCursor;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 
 public class MainScene {
-    private static final String RUNNING = "Running";
-    private static final String THROWING = "Throwing";
-    private static final String HIGHJUMPING = "HighJumping";
-    private static final String REST = "Rest";
+    private static final Logger logger = LogManager.getLogger(MainScene.class.getSimpleName());
     private static int nrOfPlayers;
     private static List<Player> playersList;
-    private static AtomicReference<Map<String, String>> gameState = new AtomicReference<>(new HashMap<>());
-    private static HashMap<Integer, Map<Integer, TextField>> playerPointsMap = new HashMap<>();
 
-    private static final Map<Integer, Map<String, String>> runningGamesParametersMap = new HashMap<>();
-    private static final Map<Integer, Map<String, String>> highJumpingGamesParametersMap = new HashMap<>();
-    private static final Map<Integer, Map<String, String>> throwingGamesParametersMap = new HashMap<>();
-    private static final Map<Integer, Map<String, String>> restGamesParametersMap = new HashMap<>();
-    private static final Map<Integer, String> gameCategoryMap = new HashMap<>();
+    private static final Map<String, String> gameState = new HashMap<>();
+    private static final HashMap<Integer, Map<Integer, TextField>> playerPointsMap = new HashMap<>();
+    private static final Map<Integer, Map<String, String>> gamesParameterMap = new HashMap<>();
+    private static Game game;
+    private static Map<String, String> activeGameMap;
 
-
-    private static int activeGame = 0;
+    private static int activeGameId = 0;
 
     private MainScene(){
     }
 
     public static void start(Stage stageMain, List<Player> playersListInput) throws IOException {
+        logger.debug("Starting main screen");
         playersList = playersListInput;
         nrOfPlayers = playersList.size();
         FXMLLoader loaderMain = new FXMLLoader(MainScene.class.getClassLoader().getResource("Main.fxml"));
@@ -65,10 +62,167 @@ public class MainScene {
         MainController controller = loaderMain.getController();
 
         // Set custom cursor
-        Image cursorUp = new Image("/images/finger_up.png");
-        sceneMain.setCursor(new ImageCursor(cursorUp));
+        Cursor cursorUp = Functions.getCustomCursor("up");
+        sceneMain.setCursor(cursorUp);
 
+        createPlayerPointsMap(controller);
+        createGamesParameterMap();
+        initGameState();
+
+        // Launch task
+        Timeline timeLine = getTimeLine(controller);
+        timeLine.play();
+    }
+
+    private static Timeline getTimeLine(MainController controller) {
+        Timeline runningTasks = new Timeline(new KeyFrame(Duration.millis(100), _ -> {
+            if (Objects.equals(gameState.get(Constants.GAMEOVER), "true")) {
+                activeGameMap = gamesParameterMap.get(activeGameId);
+                if (logger.isInfoEnabled()){
+                    logger.info("Starting new game: {}", activeGameMap.get(Constants.NAME));
+                }
+                // TODO switch für unterschiedliche categories
+                String activeGameCategory = activeGameMap.get(Constants.CATEGORY);
+                switch (activeGameCategory){
+                    case Constants.RUNNING : game = new RunningGame(controller, activeGameMap); break;
+                    default: game = new RestGame(controller, activeGameMap);
+                }
+
+                gameState.put(Constants.GAMEOVER, "false");
+            }
+            doBackgroundTasks(controller);
+            game.playGame(controller, activeGameMap, gameState);
+
+        }));
+        runningTasks.setCycleCount(Animation.INDEFINITE);
+        return runningTasks;
+    }
+
+    private static void doBackgroundTasks(MainController controller){
+        // Update the total score of the players
+        for (int i = 0; i < nrOfPlayers; i++){
+            int totalScore = 0;
+            for (int j = 2; j < 12; j++){
+                try {
+                    totalScore += Integer.parseInt(playerPointsMap.get(i + 1).get(j).getText());
+                } catch (NumberFormatException e) {
+                    totalScore += 0;
+                }
+            }
+            playerPointsMap.get(i+1).get(12).setText(String.valueOf(totalScore));
+        }
+        for (int i = 0; i < nrOfPlayers; i++){
+            int totalScore = playersList.get(i).getTotalPoints();
+            playerPointsMap.get(i+1).get(12).setText(String.valueOf(totalScore));
+        }
+
+        // Highlight on the active game
+        GridPane.setConstraints(controller.highlightGame,0, Integer.parseInt(gameState.get(Constants.GAMEID)) + 2);
+
+        updateDiceStatus(controller);
+
+        // Only calculate score after the dice are done rolling
+        for (Node child:controller.dicePane.getChildren()){
+            if (child instanceof Die die && die.isRollingDone()){
+                updateCurrentScore(controller, activeGameMap);
+                break;
+            }
+        }
+
+        // Do category specific stuff
+        switch (activeGameMap.get(Constants.CATEGORY)){
+            case Constants.RUNNING:{
+                updateRerollCount(controller.dicePane);
+                break;
+            }
+            default:
+        }
+    }
+
+    private static void updateCurrentScore(MainController controller, Map<String, String> activeGameMap) {
+        int currentScore = 0;
+        String totalScore = "0";
+        for (Node child:controller.dicePane.getChildren()){
+            if (child instanceof Die die && die.isActive()){
+                if (!Objects.equals(die.getStatus(), Constants.FOUL)){
+                    currentScore += die.getValue();
+                } else {
+                    currentScore -= die.getValue();
+                }
+            }
+        }
+        switch (activeGameMap.get(Constants.CATEGORY)){
+            case Constants.RUNNING:{
+                int previousRoundsScore = Integer.parseInt(MainScene.gameState.get("lastAchieved"));
+                totalScore = String.valueOf(currentScore + previousRoundsScore);
+                break;
+            }
+            default:
+        }
+        for (Node child:controller.dicePane.getChildren()){
+            if (Objects.equals(child.getId(), "upperLabel")){
+                ((Label) child).setText("Current Score: " + totalScore);
+            }
+        }
+    }
+
+    private static void updateRerollCount(GridPane dicePane) {
+        for (Node child:dicePane.getChildren()){
+            if (Objects.equals(child.getId(), "lowerLabel")){
+                ((Label) child).setText("Rerolls: " + gameState.get("remainingRerolls"));
+            }
+        }
+    }
+
+    public static void updateDiceStatus(MainController controller) {
+        //update dice status
+        for (Node child: controller.dicePane.getChildren()){
+            if (child instanceof Die die){
+                String dieStatus = die.getStatus();
+                Rectangle2D viewport = die.getViewport();
+                double viewportX = viewport.getMinX();
+                double newViewportY;
+                switch (dieStatus){
+                    case Constants.ACTIVE: {
+                        die.setVisible(true);
+                        newViewportY = 0;
+                        break;
+                    }
+                    case Constants.INACTIVE: {
+                        die.setVisible(false);
+                        newViewportY = 0;
+                        break;
+                    }
+                    case Constants.FOUL: {
+                        die.setVisible(true);
+                        // display red die
+                        newViewportY = 128;
+                        break;
+                    }
+                    case Constants.GRAYED:{
+                        die.setVisible(true);
+                        // display gray die
+                        newViewportY = 256;
+                        break;
+                    }
+                    case Constants.FROZEN: {
+                        die.setVisible(true);
+                        // display blue die
+                        newViewportY = 384;
+                        break;
+                    }
+                    default:
+                        die.setVisible(false);
+                        newViewportY = 0;
+                }
+                die.setViewport(new Rectangle2D(viewportX, newViewportY, 128, 128));
+            }
+        }
+    }
+
+    private static void createPlayerPointsMap(MainController controller) {
         // Creating a map for every player and every game to access the points within
+        logger.trace("Creating player points map");
         for (int i = 0; i < nrOfPlayers; i++){
             HashMap<Integer, TextField> gameMap = new HashMap<>();
             playerPointsMap.put(i+1, gameMap);
@@ -80,13 +234,13 @@ public class MainScene {
                 int gameNr = GridPane.getRowIndex(child);
                 Map<Integer, TextField> gameMap = playerPointsMap.get(playerNr);
                 gameMap.put(gameNr, textField);
-                if (gameNr == 1){
-                    textField.setText(playersList.get(playerNr-1).getName());
-                }
             }
         }
+    }
 
+    private static void createGamesParameterMap() throws IOException {
         // Import the game parameters from the json file and put them in a map
+        logger.trace("Create games parameter map");
         InputStream is = new FileInputStream("src/main/resources/GameParameters.json");
         String jsonTxt = IOUtils.toString(is, StandardCharsets.UTF_8);
         JSONObject jsonObject = new JSONObject(jsonTxt);
@@ -94,205 +248,79 @@ public class MainScene {
 
         for (int gameId = 0; gameId < jsonGamesList.length(); gameId++) {
             JSONObject gameObject = jsonGamesList.getJSONObject(gameId);
-            String gameName = gameObject.getString("name");
-            String gameCategory = gameObject.getString("category");
+            Map<String, String> gameParameterMap = new HashMap<>();
+            // General attributes for all games
+            String gameCategory = gameObject.getString(Constants.CATEGORY);
+            gameParameterMap.put(Constants.GAMEID, String.valueOf(gameId));
+            gameParameterMap.put(Constants.NAME, gameObject.getString(Constants.NAME));
+            gameParameterMap.put(Constants.CATEGORY, gameCategory);
+            // Attributes for some games
+            gameParameterMap.put("groups", "");
+            gameParameterMap.put("dicePerGroup", "");
+            gameParameterMap.put("minDice", "");
+            gameParameterMap.put("maxDice", "");
+            gameParameterMap.put("nrDice", "");
+            gameParameterMap.put(Constants.PARITY, "");
 
+            // Adjust the matching fields per game category
             switch (gameCategory) {
-                case RUNNING:
-                    Map<String, String> runningGameParametersMap = new HashMap<>();
-                    runningGameParametersMap.put("name", gameName);
-
+                case Constants.RUNNING:
                     String groupsOfDice = String.valueOf(gameObject.getInt("groups of dice"));
                     String dicePerGroup = String.valueOf(gameObject.getInt("dice per group"));
-                    runningGameParametersMap.put("groups", groupsOfDice);
-                    runningGameParametersMap.put("dicePerGroup", dicePerGroup);
-
-                    runningGamesParametersMap.put(gameId, runningGameParametersMap);
-                    gameCategoryMap.put(gameId, RUNNING);
+                    gameParameterMap.put("groups", groupsOfDice);
+                    gameParameterMap.put("dicePerGroup", dicePerGroup);
                     break;
 
-                case HIGHJUMPING:
-                    Map<String, String> highJumpingGameParametersMap = new HashMap<>();
-                    highJumpingGameParametersMap.put("name", gameName);
-
+                case Constants.HIGHJUMPING:
                     String minDice = String.valueOf(gameObject.getInt("min number of dice"));
                     String maxDice = String.valueOf(gameObject.getInt("max number of dice"));
-                    highJumpingGameParametersMap.put("minDice", minDice);
-                    highJumpingGameParametersMap.put("maxDice", maxDice);
-
-                    highJumpingGamesParametersMap.put(gameId, highJumpingGameParametersMap);
-                    gameCategoryMap.put(gameId, HIGHJUMPING);
+                    gameParameterMap.put("minDice", minDice);
+                    gameParameterMap.put("maxDice", maxDice);
                     break;
 
-                case THROWING:
-                    Map<String, String> throwingGameParametersMap = new HashMap<>();
-                    throwingGameParametersMap.put("name", gameName);
-
+                case Constants.THROWING:
                     String nrDice = String.valueOf(gameObject.getInt("number of dice"));
-                    String parity = gameObject.getString("parity");
-                    throwingGameParametersMap.put("nrDice", nrDice);
-                    throwingGameParametersMap.put("parity", parity);
-
-                    throwingGamesParametersMap.put(gameId, throwingGameParametersMap);
-                    gameCategoryMap.put(gameId, THROWING);
+                    String parity = gameObject.getString(Constants.PARITY);
+                    gameParameterMap.put("nrDice", nrDice);
+                    gameParameterMap.put(Constants.PARITY, parity);
                     break;
-
-                default:
-                    Map<String, String> restGameParametersMap = new HashMap<>();
-                    restGameParametersMap.put("name", gameName);
-                    restGamesParametersMap.put(gameId, restGameParametersMap);
-                    gameCategoryMap.put(gameId, REST);
             }
+            gamesParameterMap.put(gameId, gameParameterMap);
         }
-
-        // Launch background tasks
-        Timeline backgroundTasks = getBackgorundTasksTimeline(scoreSheet, controller.dicePane, playerPointsMap);
-        Timeline runningGames = getRunningGameTimeline(controller);
-        backgroundTasks.play();
-        runningGames.play();
-        activeGame += 1;
     }
 
-    private static Timeline getRunningGameTimeline(MainController controller) {
-        Game game;
-        gameState.get().put("gameId", String.valueOf(activeGame));
-        gameState.get().put("round", "0");
-        gameState.get().put("activePlayer", "0");
-        gameState.get().put("previousRoundsScore", "0");
-        gameState.get().put("thisRoundScore", "0");
-        gameState.get().put("nextRound", "false");
-        String activeGameCategory = gameCategoryMap.get(activeGame);
-        gameState.get().put("category", activeGameCategory);
-        switch (activeGameCategory){
-            case RUNNING -> {
-                Map<String, String> activeGameMap = runningGamesParametersMap.get(activeGame);
-                String name = activeGameMap.get("name");
-                String nrDice = activeGameMap.get("dicePerGroup");
-                String nrRounds = activeGameMap.get("groups");
-                gameState.get().put("name", name);
-                gameState.get().put("nrDice", nrDice);
-                gameState.get().put("remainingRerolls", "5");
-                gameState.get().put("nrRounds", nrRounds);
-                if (!Objects.equals(name, "110 m hurdles")){
-                    gameState.get().put("foulValue", "6");
-                } else {
-                    gameState.get().put("foulValue", null);
-                }
-
-                game = new RunningGame(controller);
-            }
-            default -> game = new RestGame();
-        }
-
-        Timeline runningTasks = new Timeline(new KeyFrame(Duration.millis(100), _ -> gameState.set(game.playGame(gameState, controller).get())));
-        runningTasks.setCycleCount(Animation.INDEFINITE);
-
-        return runningTasks;
+    private static void initGameState() {
+        // General attributes for game state
+        logger.trace("initialize game state map");
+        gameState.put(Constants.GAMEID, "0");
+        gameState.put("activePlayer", "0");
+        gameState.put(Constants.GAMEOVER, "true");
+        gameState.put("score", "0");
+        gameState.put("lastAchieved", "0"); //previousRoundScore for running, lastHeight for jumping, lastDistance for throwing
+        gameState.put("nextTry", "false"); //nextRound for running, nextHeight for jumping
+        gameState.put("currentAttempt", "0"); // for jumping, throwing and rest
+        // Attributes for running games
+        gameState.put("round", "0");
+        gameState.put("thisRoundScore", "0");
+        gameState.put("remainingRerolls", "5");
+        // Attributes for jumping games
+        gameState.put("currentHeight", "10");
+        // Attributes for throwing games
+        // TODO
+        // Attributes for the two rest games
+        // TODO
     }
 
-    private static Timeline getBackgorundTasksTimeline(GridPane scoreSheet, GridPane dicePane, HashMap<Integer, Map<Integer, TextField>> playerPointsMap) {
-        // Highlight on the first game
-        Rectangle highlightGame = new Rectangle();
-        highlightGame.setFill(Color.BLUEVIOLET);
-        highlightGame.setOpacity(0.25);
-        highlightGame.setHeight(64);
-        highlightGame.setWidth(64);
-        highlightGame.setArcHeight(10);
-        highlightGame.setArcWidth(10);
-        scoreSheet.add(highlightGame, 0, 2);
-        highlightGame.toBack();
-
-        Timeline backgroundTasks = new Timeline(new KeyFrame(Duration.millis(100), _ -> {
-            // Update the total score of the players
-            for (int i = 0; i < nrOfPlayers; i++){
-                int totalScore = 0;
-                for (int j = 2; j < 12; j++){
-                    try {
-                        totalScore += Integer.parseInt(playerPointsMap.get(i + 1).get(j).getText());
-                    } catch (NumberFormatException e) {
-                        totalScore += 0;
-                    }
-                }
-                playerPointsMap.get(i+1).get(12).setText(String.valueOf(totalScore));
-            }
-            for (int i = 0; i < nrOfPlayers; i++){
-                int totalScore = playersList.get(i).getTotalPoints();
-                playerPointsMap.get(i+1).get(12).setText(String.valueOf(totalScore));
-            }
-
-            // Highlight on the active game
-            GridPane.setConstraints(highlightGame,0,activeGame + 1);
-
-            // Set the remaining rerolls
-            String remainingRerolls = getGameState().get().get("remainingRerolls");
-            for (Node child:dicePane.getChildren()){
-                if (Objects.equals(child.getId(), "rerollLabel")){
-                    ((Label) child).setText("Rerolls: " + remainingRerolls);
-                    break;
-                }
-            }
-            if (Objects.equals(remainingRerolls, "0")){
-                for (Node child:dicePane.getChildren()){
-                    if (Objects.equals(child.getId(), "rollButton")){
-                        child.setDisable(true);
-                        break;
-                    }
-                }
-            }
-
-            // Show the current score
-            int previousRoundsScore = Integer.parseInt(getGameState().get().get("previousRoundsScore"));
-            int thisRoundScore = Integer.parseInt(getGameState().get().get("thisRoundScore"));
-            String currentScore = String.valueOf(previousRoundsScore + thisRoundScore);
-            for (Node child:dicePane.getChildren()){
-                if (Objects.equals(child.getId(), "scoreLabel")){
-                    ((Label) child).setText("Current score: " + currentScore);
-                    break;
-                }
-            }
-
-        }));
-        backgroundTasks.setCycleCount(Animation.INDEFINITE);
-        return backgroundTasks;
-    }
-
-    public static List<Map<Integer, Image>> getSpriteMap() {
-        Map<Integer, Image> resultSprites = new HashMap<>();
-        Map<Integer, Image> animSprites = new HashMap<>();
-
-        for (int i = 0; i < 6; i++) {
-            Image dieSprite = new Image("images/die" + (i + 1) + ".png");
-            resultSprites.put(i, dieSprite);
-        }
-        for (int i = 0; i < 8; i++) {
-            Image dieSprite = new Image("images/ani" + (i + 1) + ".png");
-            animSprites.put(i, dieSprite);
-        }
-
-        List<Map<Integer, Image>> sprites = new ArrayList<>();
-        sprites.add(resultSprites);
-        sprites.add(animSprites);
-
-        return sprites;
-    }
-
-    public static AtomicReference<Map<String, String>> getGameState() {
+    public static Map<String, String> getGameState() {
         return gameState;
     }
 
-    public static void setGameState(AtomicReference<Map<String, String>> gameState) {
-        MainScene.gameState = gameState;
+    public static Map<String, String> getActiveGameMap() {
+        return activeGameMap;
     }
 
-    public static int getNrOfPlayers(){
-        return nrOfPlayers;
-    }
     public static void setNrOfPlayers(int i){
         nrOfPlayers = i;
-    }
-
-    public static Map<Integer, Map<Integer, TextField>> getPlayerPointsMap() {
-        return playerPointsMap;
     }
 
     public static List<Player> getPlayersList() {

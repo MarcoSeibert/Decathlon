@@ -3,17 +3,17 @@ package com.github.marcoseibert.util;
 import com.github.marcoseibert.controller.MainController;
 
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 
 public class RestGame extends Game {
-    public RestGame() {
-        super();
+    public RestGame(MainController controller, Map<String, String> activeGameMap) {
+        super(controller, activeGameMap);
     }
 
     @Override
-    public AtomicReference<Map<String, String>> playGame(AtomicReference<Map<String, String>> gameState, MainController controller) {
-        return gameState;
+    public void playGame(MainController controller, Map<String, String> activeGameMap, Map<String, String> gameState) {
+        // TODO
     }
+
 
 }
