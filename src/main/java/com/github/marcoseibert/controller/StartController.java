@@ -1,8 +1,8 @@
 package com.github.marcoseibert.controller;
 import com.github.marcoseibert.MainScene;
 import com.github.marcoseibert.util.Functions;
-
 import com.github.marcoseibert.util.Player;
+
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -14,12 +14,16 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class StartController {
+    private static final Logger logger = LogManager.getLogger(StartController.class.getSimpleName());
 
     @FXML
     public ChoiceBox<String> playerNumberChoioceBox;
@@ -41,6 +45,7 @@ public class StartController {
                playerName.setPromptText("Player " + (i+1));
            }
        }
+       logger.debug("Setting players to {}", nrOfPlayers);
     }
 
     public void startTheGame(MouseEvent mouseEvent) throws IOException {
@@ -58,6 +63,10 @@ public class StartController {
         if (start) {
             Stage stageStart = (Stage) startButton.getScene().getWindow();
             MainScene.start(stageStart, playersList);
+            logger.debug("Starting with players:");
+            for (Player player:playersList) {
+                logger.debug("    {}", player.getName());
+            }
         }
     }
 

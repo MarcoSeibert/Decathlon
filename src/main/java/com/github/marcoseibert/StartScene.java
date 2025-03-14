@@ -6,9 +6,12 @@ import javafx.scene.*;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 public class StartScene extends Application {
+    private static final Logger logger = LogManager.getLogger(StartScene.class.getSimpleName());
 
     @Override
     public void start(Stage stageStart) throws Exception {
@@ -24,6 +27,7 @@ public class StartScene extends Application {
     }
 
     public static void main(String[] args) {
+            logger.info("Starting application");
             launch(args);
         }
 

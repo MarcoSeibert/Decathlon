@@ -1,9 +1,10 @@
 package com.github.marcoseibert.controller;
 import com.github.marcoseibert.MainScene;
+import com.github.marcoseibert.util.Constants;
 import com.github.marcoseibert.util.Die;
 import com.github.marcoseibert.util.Functions;
-
 import com.github.marcoseibert.util.Player;
+
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -16,18 +17,22 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 
 public class MainController {
+    private static final Logger logger = LogManager.getLogger(MainController.class.getSimpleName());
     private static final double SPRITE_SIZE = 64;
-
     private boolean rolled = false;
+
     @FXML
     public GridPane scoreSheet;
     @FXML
@@ -39,9 +44,9 @@ public class MainController {
     @FXML
     public Button nextButton;
     @FXML
-    public Label rerollLabel;
+    public Label lowerLabel;
     @FXML
-    public Label scoreLabel;
+    public Label upperLabel;
     @FXML
     public ImageView running100;
     @FXML
@@ -67,6 +72,7 @@ public class MainController {
 
     public void initialize() {
         // for every player add the text fields to hold the name and the points of the single games
+        logger.trace("Initialize text fields");
         List<Player> playerList = MainScene.getPlayersList();
         int nrOfPlayers = playerList.size();
         for (int i = 1; i <= nrOfPlayers; i++) {
@@ -91,13 +97,15 @@ public class MainController {
         }
 
         // Dynamical spanning of the title
+        logger.trace("Span title");
         for (Node child : scoreSheet.getChildren()){
             if (Objects.equals(child, title)){
                 GridPane.setColumnSpan(child, nrOfPlayers + 1);
             }
         }
 
-        // Restrict the game icon to only one port
+        // Restrict the game icon to only one sport
+        logger.trace("Setting viewports for icons");
         Rectangle2D runningRect = new Rectangle2D(2 * SPRITE_SIZE, SPRITE_SIZE, SPRITE_SIZE, SPRITE_SIZE);
         running100.setViewport(runningRect);
         longJump.setViewport(new Rectangle2D(0, SPRITE_SIZE, SPRITE_SIZE, SPRITE_SIZE));
@@ -110,16 +118,18 @@ public class MainController {
         javelin.setViewport(new Rectangle2D(3 * SPRITE_SIZE,0, SPRITE_SIZE, SPRITE_SIZE));
         running1500.setViewport(runningRect);
 
-        // Create 8 dice invisible for now
+        // Create 8 dice
+        logger.trace("Creating dice");
         for (int i=0; i < 8; i++) {
             Die die = new Die();
-            die.setVisible(false);
+            die.setOnMouseClicked(this::clickOnDie);
             dicePane.add(die, i%2, i/2 + 2);
         }
     }
 
     public void clickRollButton(MouseEvent mouseEvent) {
         if (mouseEvent.getButton() == MouseButton.PRIMARY){
+            logger.debug("rollButton pressed");
             if (!rolled) {
                 rolled = true;
             }
@@ -127,6 +137,20 @@ public class MainController {
                 if (child instanceof Die die && die.isActive()){
                     die.rollDie();
                 }
+            }
+            Map<String, String> gameState = MainScene.getGameState();
+            Map<String, String> activeGameMap = MainScene.getActiveGameMap();
+            String activeGameCategory = activeGameMap.get("category");
+            switch (activeGameCategory){
+                case Constants.RUNNING: {
+                    if (Objects.equals(rollButton.getText(), "Reroll")){
+                        int newRemainingRerolls = Integer.parseInt(gameState.get("remainingRerolls")) - 1;
+                        gameState.put("remainingRerolls", String.valueOf(newRemainingRerolls));
+                    }
+                    break;
+                }
+                default:
+
             }
         }
     }
@@ -138,6 +162,7 @@ public class MainController {
             rollButton.setCursor(cursorDown);
         }
     }
+
     public void setCursorUp(MouseEvent mouseEvent) {
         if (mouseEvent.getButton() == MouseButton.PRIMARY) {
             Cursor cursorUp = Functions.getCustomCursor("up");
@@ -146,6 +171,20 @@ public class MainController {
     }
 
     public void clickNextButton(MouseEvent mouseEvent) {
+        if (mouseEvent.getButton() == MouseButton.PRIMARY) {
+            logger.debug("nextButton pressed");
+        }
+    }
 
+    //test method
+    public void clickOnDie(MouseEvent mouseEvent){
+        Node clickedNode = mouseEvent.getPickResult().getIntersectedNode();
+        if (clickedNode instanceof Die die){
+            die.setStatus(Constants.FOUL);
+        }
+    }
+
+    public boolean isRolled() {
+        return rolled;
     }
 }

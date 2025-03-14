@@ -1,3 +1,13 @@
+Stuff I learned:
+    java ;-)
+    java fx
+        several stages
+        FXML + controllers
+        sprite sheets
+    abstract classes
+    basic threading (parallel rolling the dice)
+    JSON reading (to be improved?)
+
 Running:
     played in rounds per group
     Reroll Button (solange noch rerolls da sind)
@@ -23,3 +33,5 @@ Throwing:
     Next nachdem min 1 Würfel gefreezt wurde (automatisches Würfeln der remaning Würfel)
     Falls foul (nix zum freezen) -> next attempt button, 0 points for attempt
     Stop button (get points for attempt)
+
+Sammelklassen für Funktionen je Kategorie?

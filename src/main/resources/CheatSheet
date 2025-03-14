@@ -26,9 +26,10 @@ gameState           MainScene
     gameId
     activePlayer
     gameOver    bool
-    lastAchieved
-    nextTry     bool
-    currentAttempt
-    round
-    thisRoundScore
-    currentHeight
+    lastAchieved                previousRoundScore for running, lastHeight for jumping, lastDistance for throwing
+    nextTry     bool            nextRound for running, nextHeight for jumping
+    currentAttempt              for jumping, throwing and rest
+    round                       running
+    thisRoundScore              running
+    currentHeight               jumping
+    remainingRerolls            running

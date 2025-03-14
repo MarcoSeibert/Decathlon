@@ -1,18 +1,19 @@
-//package com.github.marcoseibert.util;
-//
-//import com.github.marcoseibert.controller.MainController;
-//
-//import java.util.Map;
-//
-//
-//public class RestGame extends Game {
-//    public RestGame() {
-//        super();
-//    }
-//
-//    @Override
-//    public Map<String, String> playGame(Map<String, String> gameState, MainController controller, Map<String, String> gamesParameterMap) {
-//        return gameState;
-//    }
-//
-//}
+package com.github.marcoseibert.util;
+
+import com.github.marcoseibert.controller.MainController;
+
+import java.util.Map;
+
+
+public class RestGame extends Game {
+    public RestGame(MainController controller, Map<String, String> activeGameMap) {
+        super(controller, activeGameMap);
+    }
+
+    @Override
+    public void playGame(MainController controller, Map<String, String> activeGameMap, Map<String, String> gameState) {
+        // TODO
+    }
+
+
+}
