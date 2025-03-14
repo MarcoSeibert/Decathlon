@@ -4,9 +4,10 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="1000.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.marcoseibert.util.controller.MainController">
+<AnchorPane id="AnchorPane" prefHeight="1000.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.marcoseibert.controller.MainController">
     <GridPane fx:id="scoreSheet" layoutX="10.0" layoutY="10.0" vgap="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
         <columnConstraints>
             <ColumnConstraints halignment="CENTER" minWidth="74.0" prefWidth="64.0" />
@@ -26,35 +27,36 @@
             <RowConstraints maxHeight="64.0" minHeight="64.0" prefHeight="64.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="64.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
-        <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="2">
-            <Image url="@images/runner.png" />
+      <Rectangle fx:id="highlightGame" arcHeight="10.0" arcWidth="10.0" fill="BLUEVIOLET" height="64.0" opacity="0.25" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="64.0" GridPane.rowIndex="2" />
+        <ImageView fx:id="running100" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="2">
+            <Image url="@images/sportsSpriteSheet.png" />
         </ImageView>
-        <ImageView fitHeight="64.0" fitWidth="64.0" layoutX="15.0" layoutY="68.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="6">
-            <Image url="@images/runner.png" />
+        <ImageView fx:id="running400" fitHeight="64.0" fitWidth="64.0" layoutX="15.0" layoutY="68.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="6">
+            <Image url="@images/sportsSpriteSheet.png" />
         </ImageView>
-        <ImageView fitHeight="64.0" fitWidth="64.0" layoutX="15.0" layoutY="379.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="11">
-            <Image url="@images/runner.png" />
+        <ImageView fx:id="running1500" fitHeight="64.0" fitWidth="64.0" layoutX="15.0" layoutY="379.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="11">
+            <Image url="@images/sportsSpriteSheet.png" />
         </ImageView>
-        <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="3">
-            <Image url="@images/long-jump.png" />
+        <ImageView fx:id="longJump" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="3">
+            <Image url="@images/sportsSpriteSheet.png" />
         </ImageView>
-        <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="4">
-            <Image url="@images/shot-put.png" />
+        <ImageView fx:id="shotPut" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="4">
+            <Image url="@images/sportsSpriteSheet.png" />
         </ImageView>
-        <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="5">
-            <Image url="@images/high-jump.png" />
+        <ImageView fx:id="highJump" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="5">
+            <Image url="@images/sportsSpriteSheet.png" />
         </ImageView>
-        <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="7">
-            <Image url="@images/hurdles.png" />
+        <ImageView fx:id="hurdles" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="7">
+            <Image url="@images/sportsSpriteSheet.png" />
         </ImageView>
-        <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="8">
-            <Image url="@images/discus.png" />
+        <ImageView fx:id="discus" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="8">
+            <Image url="@images/sportsSpriteSheet.png" />
         </ImageView>
-        <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="9">
-            <Image url="@images/pole-vault.png" />
+        <ImageView fx:id="poleVault" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="9">
+            <Image url="@images/sportsSpriteSheet.png" />
         </ImageView>
-        <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="10">
-            <Image url="@images/javelin.png" />
+        <ImageView fx:id="javelin" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="10">
+            <Image url="@images/sportsSpriteSheet.png" />
         </ImageView>
       <Label fx:id="title" text="Decathlon" GridPane.columnSpan="1" GridPane.rowIndex="0">
          <font>
@@ -71,6 +73,8 @@
             <ColumnConstraints hgrow="SOMETIMES" minWidth="128.0" prefWidth="128.0" />
         </columnConstraints>
         <rowConstraints>
+         <RowConstraints minHeight="64.0" prefHeight="64.0" vgrow="SOMETIMES" />
+         <RowConstraints minHeight="64.0" prefHeight="64.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="128.0" prefHeight="128.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="128.0" prefHeight="128.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="128.0" prefHeight="128.0" vgrow="SOMETIMES" />
@@ -80,10 +84,25 @@
         <padding>
             <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
         </padding>
-        <Button fx:id="rollButton" alignment="CENTER" mnemonicParsing="false" onMouseClicked="#rollActiveDice" onMousePressed="#setCursorDown" onMouseReleased="#setCursorUp" text="Roll dice!" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER">
+        <Button fx:id="rollButton" alignment="CENTER" mnemonicParsing="false" onMouseClicked="#clickRollButton" onMousePressed="#setCursorDown" onMouseReleased="#setCursorUp" text="Roll" GridPane.halignment="CENTER" GridPane.rowIndex="6" GridPane.valignment="CENTER">
            <font>
                <Font name="Trebuchet MS" size="32.0" />
            </font>
         </Button>
+      <Button fx:id="nextButton" alignment="CENTER" layoutX="51.0" layoutY="590.0" mnemonicParsing="false" onMouseClicked="#clickNextButton" onMousePressed="#setCursorDown" onMouseReleased="#setCursorUp" text="Next" visible="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="6" GridPane.valignment="CENTER">
+         <font>
+            <Font name="Trebuchet MS" size="32.0" />
+         </font>
+      </Button>
+      <Label fx:id="lowerLabel" text="Rerolls: 5" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+         <font>
+            <Font name="Trebuchet MS" size="32.0" />
+         </font>
+      </Label>
+      <Label fx:id="upperLabel" layoutX="100.0" layoutY="123.0" text="Current score: 0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+         <font>
+            <Font name="Trebuchet MS" size="32.0" />
+         </font>
+      </Label>
     </GridPane>
 </AnchorPane>

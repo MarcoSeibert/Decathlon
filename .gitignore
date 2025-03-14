@@ -41,6 +41,4 @@ build/
 /log.txt.bak
 /log.txt
 /logs/
-
-### Sprite sheet ###
-/src/main/resources/images/die.png
+/src/main/resources/.$Flow.drawio.bkp
