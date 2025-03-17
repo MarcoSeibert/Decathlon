@@ -25,11 +25,14 @@ gameParameterMap    MainScene
 gameState           MainScene
     gameId
     activePlayer
+    currentScore
     gameOver    bool
-    lastAchieved                previousRoundScore for running, lastHeight for jumping, lastDistance for throwing
+    lastAchieved                previousRoundScore for running, lastHeight for jumping, bestDistance for throwing
     nextTry     bool            nextRound for running, nextHeight for jumping
     currentAttempt              for jumping, throwing and rest
     round                       running
     thisRoundScore              running
     currentHeight               jumping
     remainingRerolls            running
+    frozenSum                   long jump, throwing
+    frozenAmount                long jump

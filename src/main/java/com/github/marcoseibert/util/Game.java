@@ -5,7 +5,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 
 import java.util.Map;
-import java.util.Objects;
 
 
 public abstract class Game {
@@ -16,9 +15,9 @@ public abstract class Game {
         createStartingDice(controller, activeGameMap);
         for (Node child:controller.dicePane.getChildren()) {
             if (child instanceof Button button){
-                if (Objects.equals(button.getId(), "rollButton")){
+                if (button.getId().equals("rollButton")){
                     this.rollButton = button;
-                } else if (Objects.equals(button.getId(), "nextButton")) {
+                } else if (button.getId().equals("nextButton")) {
                     this.nextButton = button;
                 }
             }
@@ -40,9 +39,9 @@ public abstract class Game {
                 initDice = Integer.parseInt(activeGameMap.get("minDice"));
                 break;
             default:
-                if (Objects.equals(activeGameMap.get(Constants.NAME), "Shot Put")){
+                if (activeGameMap.get(Constants.NAME).equals("Shot Put")){
                     initDice = 1;
-                } else if (Objects.equals(activeGameMap.get(Constants.NAME), "Long jump")){
+                } else if (activeGameMap.get(Constants.NAME).equals("Long jump")){
                     initDice = 5;
                 }
         }

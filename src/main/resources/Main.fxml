@@ -75,6 +75,7 @@
         <rowConstraints>
          <RowConstraints minHeight="64.0" prefHeight="64.0" vgrow="SOMETIMES" />
          <RowConstraints minHeight="64.0" prefHeight="64.0" vgrow="SOMETIMES" />
+         <RowConstraints minHeight="64.0" prefHeight="64.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="128.0" prefHeight="128.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="128.0" prefHeight="128.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="128.0" prefHeight="128.0" vgrow="SOMETIMES" />
@@ -84,24 +85,35 @@
         <padding>
             <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
         </padding>
-        <Button fx:id="rollButton" alignment="CENTER" mnemonicParsing="false" onMouseClicked="#clickRollButton" onMousePressed="#setCursorDown" onMouseReleased="#setCursorUp" text="Roll" GridPane.halignment="CENTER" GridPane.rowIndex="6" GridPane.valignment="CENTER">
+        <Button fx:id="rollButton" alignment="CENTER" mnemonicParsing="false" onMouseClicked="#clickRollButton" onMousePressed="#setCursorDown" onMouseReleased="#setCursorUp" prefWidth="118.0" text="Roll" GridPane.halignment="CENTER" GridPane.rowIndex="7" GridPane.valignment="CENTER">
            <font>
-               <Font name="Trebuchet MS" size="32.0" />
+               <Font name="Trebuchet MS" size="26.0" />
            </font>
+         <GridPane.margin>
+            <Insets left="5.0" right="5.0" />
+         </GridPane.margin>
         </Button>
-      <Button fx:id="nextButton" alignment="CENTER" layoutX="51.0" layoutY="590.0" mnemonicParsing="false" onMouseClicked="#clickNextButton" onMousePressed="#setCursorDown" onMouseReleased="#setCursorUp" text="Next" visible="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="6" GridPane.valignment="CENTER">
+      <Button fx:id="nextButton" alignment="CENTER" layoutX="51.0" layoutY="590.0" mnemonicParsing="false" onMouseClicked="#clickNextButton" onMousePressed="#setCursorDown" onMouseReleased="#setCursorUp" prefWidth="118.0" text="Next" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="7" GridPane.valignment="CENTER">
          <font>
-            <Font name="Trebuchet MS" size="32.0" />
+            <Font name="Trebuchet MS" size="26.0" />
          </font>
+         <GridPane.margin>
+            <Insets left="5.0" right="5.0" />
+         </GridPane.margin>
       </Button>
-      <Label fx:id="lowerLabel" text="Rerolls: 5" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+      <Label fx:id="lowerLabel" text="Rerolls: 5" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
          <font>
             <Font name="Trebuchet MS" size="32.0" />
          </font>
       </Label>
-      <Label fx:id="upperLabel" layoutX="100.0" layoutY="123.0" text="Current Score: 0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+      <Label fx:id="upperLabel" layoutX="100.0" layoutY="123.0" text="Current Score: 0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
          <font>
             <Font name="Trebuchet MS" size="32.0" />
+         </font>
+      </Label>
+      <Label fx:id="topLabel" layoutX="50.0" layoutY="123.0" text="Current Attempt: 1" visible="false" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+         <font>
+            <Font name="Trebuchet MS" size="30.0" />
          </font>
       </Label>
     </GridPane>

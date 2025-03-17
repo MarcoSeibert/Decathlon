@@ -3,6 +3,7 @@ package com.github.marcoseibert.util;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public class Player {
     String name;
     int totalPoints;

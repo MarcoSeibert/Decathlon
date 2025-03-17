@@ -26,7 +26,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 
 public class MainController {
@@ -48,6 +47,8 @@ public class MainController {
     public Label lowerLabel;
     @FXML
     public Label upperLabel;
+    @FXML
+    public Label topLabel;
     @FXML
     public ImageView running100;
     @FXML
@@ -100,7 +101,7 @@ public class MainController {
         // Dynamical spanning of the title
         logger.trace("Span title");
         for (Node child : scoreSheet.getChildren()){
-            if (Objects.equals(child, title)){
+            if (child.equals(title)){
                 GridPane.setColumnSpan(child, nrOfPlayers + 1);
             }
         }
@@ -124,7 +125,7 @@ public class MainController {
         for (int i=0; i < 8; i++) {
             Die die = new Die();
             die.setOnMouseClicked(this::clickOnDie);
-            dicePane.add(die, i%2, i/2 + 2);
+            dicePane.add(die, i%2, i/2 + 3);
         }
     }
 
@@ -140,12 +141,13 @@ public class MainController {
             String activeGameCategory = activeGameMap.get(Constants.CATEGORY);
             switch (activeGameCategory){
                 case Constants.RUNNING: {
-                    if (Objects.equals(rollButton.getText(), "Reroll")){
+                    if (rollButton.getText().equals("Reroll")){
                         int newRemainingRerolls = Integer.parseInt(gameState.get(Constants.REMAININGREROLLS)) - 1;
                         gameState.put(Constants.REMAININGREROLLS, String.valueOf(newRemainingRerolls));
                     }
                     break;
                 }
+                case Constants.THROWING, Constants.HIGHJUMPING: throw new AssertionError();
                 default:
 
             }
@@ -186,71 +188,112 @@ public class MainController {
             Map<String, String> activeGameMap = MainScene.getActiveGameMap();
             String activeGameCategory = activeGameMap.get(Constants.CATEGORY);
 
-            if (Objects.equals(nextButton.getText(), "Finish")){
-                List <Player> playersList = MainScene.getPlayersList();
-                int nrOfPlayers = playersList.size();
-                Player activePlayer = playersList.get(Integer.parseInt(gameState.get("activePlayer")));
-                activePlayer.setPointForGame(Integer.parseInt(activeGameMap.get(Constants.GAMEID)), Integer.parseInt(gameState.get(Constants.LASTACHIEVED)) + Integer.parseInt(gameState.get(Constants.THISROUNDSCORE)));
-                this.rolled = false;
-                nextButton.setText("Next");
-                for (Node child : dicePane.getChildren()) {
-                    if (child instanceof Die die) {
-                        die.setValue(0);
-                        die.setStatus("inactive");
-                        die.setViewport(new Rectangle2D(0,0, SPRITE_SIZE, SPRITE_SIZE));
-                    }
-                }
-                if (playersList.indexOf(activePlayer) + 1 == nrOfPlayers){
-                    gameState.put(Constants.GAMEOVER, "true");
-                } else {
-                    resetGameStateForNextPlayer();
-                    Game.createStartingDice(this, activeGameMap);
-                }
+            if (nextButton.getText().equals("Finish")) {
+                clickOnFinishButton(gameState, activeGameMap);
+            } else if (nextButton.getText().equals("Foul")) {
+                clickOnFoulButton(gameState, activeGameMap);
             } else {
                 switch (activeGameCategory) {
                     case Constants.RUNNING: {
-                        for (Node child : dicePane.getChildren()) {
-                            if (child instanceof Die die && die.isActive()) {
-                                int prevScore = Integer.parseInt(gameState.get(Constants.LASTACHIEVED));
-                                gameState.put(Constants.LASTACHIEVED, String.valueOf(prevScore + die.getValue()));
-                                die.setStatus(Constants.GRAYED);
-                            } else if (child instanceof Die die && Objects.equals(die.getStatus(), Constants.INACTIVE)) {
-                                die.setStatus(Constants.ACTIVE);
-                            }
-                        }
-                        rollActiveDice();
-                        int maxRounds = Integer.parseInt(activeGameMap.get("groups"));
-                        int currentRound = Integer.parseInt(gameState.get("round"));
-                        gameState.put("round", String.valueOf(currentRound + 1));
-                        if (currentRound + 1  == maxRounds) {
-                            nextButton.setText("Finish");
-                        }
+                        nextRoundRunning(gameState, activeGameMap);
                         break;
                     }
+                    case Constants.THROWING, Constants.HIGHJUMPING:{throw new AssertionError();}
                     default:
                 }
             }
         }
     }
 
+    private void nextRoundRunning(Map<String, String> gameState, Map<String, String> activeGameMap) {
+        for (Node child : dicePane.getChildren()) {
+            if (child instanceof Die die && die.isActive()) {
+                int prevScore = Integer.parseInt(gameState.get(Constants.LASTACHIEVED));
+                gameState.put(Constants.LASTACHIEVED, String.valueOf(prevScore + die.getValue()));
+                die.setStatus(Constants.GRAYED);
+            } else if (child instanceof Die die && die.getStatus().equals(Constants.INACTIVE)) {
+                die.setStatus(Constants.ACTIVE);
+            }
+        }
+        rollActiveDice();
+        int maxRounds = Integer.parseInt(activeGameMap.get("groups"));
+        int currentRound = Integer.parseInt(gameState.get(Constants.ROUND));
+        gameState.put(Constants.ROUND, String.valueOf(currentRound + 1));
+        if (currentRound + 1  == maxRounds) {
+            nextButton.setText("Finish");
+        }
+    }
+
+    private void clickOnFoulButton(Map<String, String> gameState, Map<String, String> activeGameMap) {
+        int currentAttempt = Integer.parseInt(gameState.get(Constants.CURRENTATTEMPT));
+        gameState.put(Constants.CURRENTATTEMPT, String.valueOf(currentAttempt + 1));
+        this.rolled = false;
+        for (Node child : dicePane.getChildren()) {
+            if (child instanceof Die die) {
+                die.setValue(0);
+                die.setStatus("inactive");
+                die.setViewport(new Rectangle2D(0, 0, SPRITE_SIZE, SPRITE_SIZE));
+            }
+        }
+        Game.createStartingDice(this, activeGameMap);
+        gameState.put(Constants.FROZENAMOUNT, "0");
+        gameState.put(Constants.FROZENSUM, "0");
+    }
+
+    private void clickOnFinishButton(Map<String, String> gameState, Map<String, String> activeGameMap) {
+        List<Player> playersList = MainScene.getPlayersList();
+        int nrOfPlayers = playersList.size();
+        Player activePlayer = playersList.get(Integer.parseInt(gameState.get(Constants.ACTIVEPLAYER)));
+        activePlayer.setPointForGame(Integer.parseInt(activeGameMap.get(Constants.GAMEID)), Integer.parseInt(gameState.get(Constants.LASTACHIEVED)) + Integer.parseInt(gameState.get(Constants.THISROUNDSCORE)));
+        this.rolled = false;
+        nextButton.setText("Next");
+        for (Node child : dicePane.getChildren()) {
+            if (child instanceof Die die) {
+                die.setValue(0);
+                die.setStatus("inactive");
+                die.setViewport(new Rectangle2D(0, 0, SPRITE_SIZE, SPRITE_SIZE));
+            }
+        }
+        if (playersList.indexOf(activePlayer) + 1 == nrOfPlayers) {
+            gameState.put(Constants.GAMEOVER, "true");
+        } else {
+            resetGameStateForNextPlayer();
+            Game.createStartingDice(this, activeGameMap);
+        }
+    }
+
     private void resetGameStateForNextPlayer() {
         Map<String, String> gameState = MainScene.getGameState();
-        int activePlayer = Integer.parseInt(gameState.get("activePlayer"));
-        gameState.put("activePlayer", String.valueOf(activePlayer + 1));
+        int activePlayer = Integer.parseInt(gameState.get(Constants.ACTIVEPLAYER));
+        gameState.put(Constants.ACTIVEPLAYER, String.valueOf(activePlayer + 1));
         gameState.put(Constants.LASTACHIEVED, "0");
-        gameState.put("currentAttempt", "0");
-        gameState.put("round", "1");
+        gameState.put(Constants.CURRENTATTEMPT, "0");
+        gameState.put(Constants.ROUND, "1");
         gameState.put(Constants.THISROUNDSCORE, "0");
         gameState.put(Constants.REMAININGREROLLS, "5");
-        gameState.put("currentHeigth", "10");
+        gameState.put("currentHeight", "10");
     }
 
     //test method
     public void clickOnDie(MouseEvent mouseEvent){
-        if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+        if (mouseEvent.getButton() == MouseButton.PRIMARY) {
+            Map<String, String> activeGameMap = MainScene.getActiveGameMap();
             Node clickedNode = mouseEvent.getPickResult().getIntersectedNode();
-            if (clickedNode instanceof Die die) {
-                die.setStatus(Constants.FOUL);
+            if (isRolled() && clickedNode instanceof Die die) {
+                switch (activeGameMap.get(Constants.NAME)){
+                    case "Long jump":{
+                        if (die.getStatus().equals(Constants.ACTIVE)) {
+                            die.setStatus(Constants.FROZEN);
+                        } else if (die.getStatus().equals(Constants.FROZEN) && !die.isLocked()){
+                            die.setStatus(Constants.ACTIVE);
+                        }
+                        break;
+                    }
+                    case "discus", "javelin":{
+                        throw new AssertionError();
+                    }
+                }
+
             }
         }
     }

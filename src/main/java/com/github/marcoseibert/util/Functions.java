@@ -9,8 +9,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
-import java.util.Objects;
-
 
 public class Functions {
     private Functions(){
@@ -19,7 +17,7 @@ public class Functions {
     public static Cursor getCustomCursor(String direction) {
         Image cursorSprites = new Image("/images/cursorSpriteSheet.png");
         ImageView cursorView = new ImageView(cursorSprites);
-        if (Objects.equals(direction, Constants.UP)){
+        if (direction.equals(Constants.UP)){
             cursorView.setViewport(new Rectangle2D(0, 0, 32,32));
         } else {
             cursorView.setViewport(new Rectangle2D(32, 0, 32,32));

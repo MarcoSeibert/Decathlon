@@ -8,7 +8,6 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.util.Objects;
 import java.util.Random;
 
 
@@ -16,6 +15,7 @@ public class Die extends ImageView {
     private final Random ran = new Random();
     private String status = Constants.INACTIVE;
     private boolean foul = false;
+    private boolean locked = false;
     int value = 1;
     private static final double SPRITE_SIZE = 128;
     private static final int ANIM_SPRITES = 8;
@@ -48,9 +48,9 @@ public class Die extends ImageView {
 
         //Set foul value according to category
         int foulValue;
-        if (Objects.equals(MainScene.getActiveGameMap().get(Constants.CATEGORY), Constants.RUNNING) && !Objects.equals(MainScene.getActiveGameMap().get(Constants.NAME), "110 m hurdles")){
+        if (MainScene.getActiveGameMap().get(Constants.CATEGORY).equals(Constants.RUNNING) && !MainScene.getActiveGameMap().get(Constants.NAME).equals("110 m hurdles")){
             foulValue = 6;
-        } else if (Objects.equals(MainScene.getActiveGameMap().get(Constants.NAME), "Pole Vault")) {
+        } else if (MainScene.getActiveGameMap().get(Constants.NAME).equals("Pole Vault")) {
             foulValue = 1;
         } else foulValue = 0;
         //Set foul status
@@ -98,7 +98,7 @@ public class Die extends ImageView {
     }
 
     public boolean isActive() {
-        return Objects.equals(this.status, Constants.ACTIVE) || Objects.equals(this.status, Constants.FOUL);
+        return this.status.equals(Constants.ACTIVE) || this.status.equals(Constants.FOUL);
     }
 
     public String getStatus() {
@@ -123,5 +123,13 @@ public class Die extends ImageView {
 
     public boolean isFoul() {
         return foul;
+    }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
     }
 }

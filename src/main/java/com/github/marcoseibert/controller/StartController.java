@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
 
 public class StartController {
     private static final Logger logger = LogManager.getLogger(StartController.class.getSimpleName());
@@ -56,7 +56,7 @@ public class StartController {
             for (Node child:playerGrid.getChildren()){
                 TextField playerName = (TextField) child;
                 if (!playerName.isVisible()) {continue;}
-                start = !Objects.equals(playerName.getText(), "");
+                start = !playerName.getText().isEmpty();
                 Player player = new Player(playerName.getText());
                 playersList.add(player);
                 }
