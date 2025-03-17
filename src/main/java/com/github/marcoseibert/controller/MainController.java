@@ -262,7 +262,7 @@ public class MainController {
     private void clickOnFoulButton(Map<String, String> gameState, Map<String, String> activeGameMap) {
         int currentAttempt = Integer.parseInt(gameState.get(Constants.CURRENTATTEMPT));
         gameState.put(Constants.CURRENTATTEMPT, String.valueOf(currentAttempt + 1));
-        this.rolled = false;
+        rolled = false;
         for (Node child : dicePane.getChildren()) {
             if (child instanceof Die die) {
                 die.setValue(0);
@@ -280,7 +280,7 @@ public class MainController {
         int nrOfPlayers = playersList.size();
         Player activePlayer = playersList.get(Integer.parseInt(gameState.get(Constants.ACTIVEPLAYER)));
         activePlayer.setPointForGame(Integer.parseInt(activeGameMap.get(Constants.GAMEID)), Integer.parseInt(gameState.get(Constants.LASTACHIEVED)) + Integer.parseInt(gameState.get(Constants.THISROUNDSCORE)));
-        this.rolled = false;
+        rolled = false;
         nextButton.setText("Next");
         for (Node child : dicePane.getChildren()) {
             if (child instanceof Die die) {
