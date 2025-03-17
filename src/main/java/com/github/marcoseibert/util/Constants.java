@@ -31,6 +31,9 @@ public final class Constants {
     public static final String ACTIVEPLAYER = "activePlayer";
     public static final String ROUND = "round";
 
+    //games
+    public static final String LONGJUMP = "Long jump";
+
     //misc
     public static final String UP = "up";
     public static final String DOWN = "down";

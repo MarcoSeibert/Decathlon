@@ -37,7 +37,7 @@ public class RunningGame extends Game {
 
     private static void updateRerollCount(GridPane dicePane, Map<String, String> gameState) {
         for (Node child:dicePane.getChildren()){
-            if (child.getId().equals("lowerLabel")){
+            if (Objects.equals(child.getId(), "lowerLabel")){
                 ((Label) child).setText("Rerolls: " + gameState.get(Constants.REMAININGREROLLS));
             }
         }

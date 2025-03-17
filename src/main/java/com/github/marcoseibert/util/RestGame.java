@@ -10,7 +10,7 @@ public class RestGame extends Game {
     public RestGame(MainController controller, Map<String, String> activeGameMap) {
         super(controller, activeGameMap);
         controller.topLabel.setVisible(true);
-        if (activeGameMap.get(Constants.NAME).equals("Long jump")) {
+        if (activeGameMap.get(Constants.NAME).equals(Constants.LONGJUMP)) {
             controller.lowerLabel.setText("Frozen Total: 0");
             controller.nextButton.setText("Jump");
         }
@@ -20,7 +20,7 @@ public class RestGame extends Game {
     public void playGame(MainController controller, Map<String, String> activeGameMap, Map<String, String> gameState) {
         getNextButton().setVisible(controller.isRolled());
         controller.topLabel.setText("Current Attempt: " + gameState.get(Constants.CURRENTATTEMPT));
-        if (activeGameMap.get(Constants.NAME).equals("Long jump")) {
+        if (activeGameMap.get(Constants.NAME).equals(Constants.LONGJUMP)) {
             updateFreezeCount(controller, gameState);
             if (Integer.parseInt(gameState.get(Constants.FROZENSUM)) >= 9) {
                 controller.nextButton.setText("Foul");
@@ -28,8 +28,14 @@ public class RestGame extends Game {
                 controller.rollButton.setDisable(true);
             } else {
                 controller.nextButton.setText("Jump");
+                boolean thisRoundFrozen = false;
+                for (Node child:controller.dicePane.getChildren()){
+                    if (child instanceof Die die && die.getStatus().equals(Constants.FROZEN) && !die.isLocked()){
+                        thisRoundFrozen = true;
+                    }
+                }
                 if (controller.isRolled()) {
-                    if (gameState.get(Constants.FROZENAMOUNT).equals("0")) {
+                    if (!thisRoundFrozen) {
                         controller.rollButton.setText("Freeze");
                         controller.rollButton.setDisable(true);
                         controller.nextButton.setDisable(true);
@@ -50,11 +56,9 @@ public class RestGame extends Game {
         int freezeSum = 0;
         int freezeAmount = 0;
         for (Node child:controller.dicePane.getChildren()){
-            if (child instanceof Die die && die.getStatus().equals(Constants.FROZEN)){
+            if (child instanceof Die die && (die.getStatus().equals(Constants.FROZEN) || die.isLocked())){
                 freezeSum += die.getValue();
-                if (!die.isLocked()){
-                    freezeAmount += 1;
-                }
+                freezeAmount += 1;
             }
         }
         controller.lowerLabel.setText("Frozen Total: " + freezeSum);

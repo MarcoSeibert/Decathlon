@@ -135,7 +135,6 @@ public class MainController {
             if (!rolled) {
                 rolled = true;
             }
-            rollActiveDice();
             Map<String, String> gameState = MainScene.getGameState();
             Map<String, String> activeGameMap = MainScene.getActiveGameMap();
             String activeGameCategory = activeGameMap.get(Constants.CATEGORY);
@@ -148,8 +147,21 @@ public class MainController {
                     break;
                 }
                 case Constants.THROWING, Constants.HIGHJUMPING: throw new AssertionError();
-                default:
+                default: {
+                    if (activeGameMap.get(Constants.NAME).equals(Constants.LONGJUMP)) {
+                        rerollLongJump();
+                    }
+                }
+            }
+            rollActiveDice();
+        }
+    }
 
+    private void rerollLongJump() {
+        // lock the frozen dice to prevent from unfreezing
+        for (Node child:dicePane.getChildren()){
+            if (child instanceof Die die && die.getStatus().equals(Constants.FROZEN)){
+                die.setLocked(true);
             }
         }
     }
@@ -187,21 +199,44 @@ public class MainController {
             Map<String, String> gameState = MainScene.getGameState();
             Map<String, String> activeGameMap = MainScene.getActiveGameMap();
             String activeGameCategory = activeGameMap.get(Constants.CATEGORY);
-
-            if (nextButton.getText().equals("Finish")) {
-                clickOnFinishButton(gameState, activeGameMap);
-            } else if (nextButton.getText().equals("Foul")) {
-                clickOnFoulButton(gameState, activeGameMap);
-            } else {
-                switch (activeGameCategory) {
-                    case Constants.RUNNING: {
-                        nextRoundRunning(gameState, activeGameMap);
-                        break;
+            String textOnButton = nextButton.getText();
+            switch (textOnButton) {
+                case "Finish" -> clickOnFinishButton(gameState, activeGameMap);
+                case "Foul" -> clickOnFoulButton(gameState, activeGameMap);
+                case "Jump" -> clickOnJumpButton(gameState, activeGameMap);
+                default -> {
+                    switch (activeGameCategory) {
+                        case Constants.RUNNING: {
+                            nextRoundRunning(gameState, activeGameMap);
+                            break;
+                        }
+                        case Constants.THROWING, Constants.HIGHJUMPING: {
+                            throw new AssertionError();
+                        }
+                        default:
                     }
-                    case Constants.THROWING, Constants.HIGHJUMPING:{throw new AssertionError();}
-                    default:
                 }
             }
+        }
+    }
+
+    private void clickOnJumpButton(Map<String, String> gameState, Map<String, String> activeGameMap) {
+        if (activeGameMap.get(Constants.NAME).equals(Constants.LONGJUMP)){
+            int nrOfDiceForJumping = Integer.parseInt(gameState.get(Constants.FROZENAMOUNT));
+            int nrOfActivatedDice = 0;
+            for (Node child:dicePane.getChildren()){
+                if (child instanceof Die die && nrOfActivatedDice < nrOfDiceForJumping){
+                    die.setStatus(Constants.ACTIVE);
+                    nrOfActivatedDice++;
+                    die.setLocked(false);
+                    die.setStatus(Constants.ACTIVE);
+                } else if (child instanceof Die die) {
+                    die.setLocked(false);
+                    die.setStatus(Constants.INACTIVE);
+                }
+            }
+            rolled = false;
+            gameState.put(Constants.ROUND, "2");
         }
     }
 
@@ -281,7 +316,7 @@ public class MainController {
             Node clickedNode = mouseEvent.getPickResult().getIntersectedNode();
             if (isRolled() && clickedNode instanceof Die die) {
                 switch (activeGameMap.get(Constants.NAME)){
-                    case "Long jump":{
+                    case Constants.LONGJUMP:{
                         if (die.getStatus().equals(Constants.ACTIVE)) {
                             die.setStatus(Constants.FROZEN);
                         } else if (die.getStatus().equals(Constants.FROZEN) && !die.isLocked()){

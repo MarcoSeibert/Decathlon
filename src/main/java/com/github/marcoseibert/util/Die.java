@@ -121,10 +121,6 @@ public class Die extends ImageView {
         this.value = value;
     }
 
-    public boolean isFoul() {
-        return foul;
-    }
-
     public boolean isLocked() {
         return locked;
     }

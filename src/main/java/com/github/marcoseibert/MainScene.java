@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 
 public class MainScene {
@@ -135,7 +136,7 @@ public class MainScene {
 
     private static void updateCurrentScore(MainController controller) {
         for (Node child:controller.dicePane.getChildren()){
-            if (child.getId().equals("upperLabel")){
+            if (Objects.equals(child.getId(), "upperLabel")){
                 ((Label) child).setText("Current Score: " + gameState.get("currentScore"));
             }
         }
