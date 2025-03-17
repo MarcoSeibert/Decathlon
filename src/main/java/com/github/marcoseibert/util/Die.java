@@ -117,6 +117,10 @@ public class Die extends ImageView {
         }
     }
 
+    public void setValue(int value) {
+        this.value = value;
+    }
+
     public boolean isFoul() {
         return foul;
     }

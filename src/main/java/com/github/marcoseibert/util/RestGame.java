@@ -11,7 +11,14 @@ public class RestGame extends Game {
 
     @Override
     public void playGame(MainController controller, Map<String, String> activeGameMap, Map<String, String> gameState) {
-        // TODO
+        //Show next button after rolling
+        getNextButton().setVisible(controller.isRolled());
+        //Change text on roll button after rolling
+        if (controller.isRolled()){
+            getRollButton().setText("Reroll");
+        } else {
+            getRollButton().setText("Roll");
+        }
     }
 
 

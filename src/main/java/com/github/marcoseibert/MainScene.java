@@ -44,6 +44,7 @@ public class MainScene {
     private static Game game;
     private static Map<String, String> activeGameMap;
 
+
     private static int activeGameId = -1;
 
     private MainScene(){
@@ -68,6 +69,7 @@ public class MainScene {
         createPlayerPointsMap(controller);
         createGamesParameterMap();
         initGameState();
+        gameState.put(Constants.GAMEID, "0");
 
         // Launch task
         Timeline timeLine = getTimeLine(controller);
@@ -79,6 +81,7 @@ public class MainScene {
             if (Objects.equals(gameState.get(Constants.GAMEOVER), "true")) {
                 activeGameId++;
                 activeGameMap = gamesParameterMap.get(activeGameId);
+                initGameState();
                 if (logger.isInfoEnabled()){
                     logger.info("Starting new game: {}", activeGameMap.get(Constants.NAME));
                 }
@@ -88,7 +91,7 @@ public class MainScene {
                     case Constants.RUNNING : game = new RunningGame(controller, activeGameMap); break;
                     default: game = new RestGame(controller, activeGameMap);
                 }
-
+                gameState.put(Constants.GAMEID, String.valueOf(activeGameId));
                 gameState.put(Constants.GAMEOVER, "false");
             }
             doBackgroundTasks(controller);
@@ -290,7 +293,6 @@ public class MainScene {
     private static void initGameState() {
         // General attributes for game state
         logger.trace("initialize game state map");
-        gameState.put(Constants.GAMEID, "0");
         gameState.put("activePlayer", "0");
         gameState.put(Constants.GAMEOVER, "true");
         gameState.put("score", "0");
@@ -324,4 +326,5 @@ public class MainScene {
     public static List<Player> getPlayersList() {
         return playersList;
     }
+
 }

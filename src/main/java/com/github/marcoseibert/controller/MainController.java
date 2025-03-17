@@ -4,6 +4,7 @@ import com.github.marcoseibert.util.Constants;
 import com.github.marcoseibert.util.Die;
 import com.github.marcoseibert.util.Functions;
 import com.github.marcoseibert.util.Player;
+import com.github.marcoseibert.util.Game;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -186,8 +187,25 @@ public class MainController {
             String activeGameCategory = activeGameMap.get(Constants.CATEGORY);
 
             if (Objects.equals(nextButton.getText(), "Finish")){
-                Player activePlayer = MainScene.getPlayersList().get(Integer.parseInt(gameState.get("activePlayer")));
+                List <Player> playersList = MainScene.getPlayersList();
+                int nrOfPlayers = playersList.size();
+                Player activePlayer = playersList.get(Integer.parseInt(gameState.get("activePlayer")));
                 activePlayer.setPointForGame(Integer.parseInt(activeGameMap.get(Constants.GAMEID)), Integer.parseInt(gameState.get(Constants.LASTACHIEVED)) + Integer.parseInt(gameState.get(Constants.THISROUNDSCORE)));
+                this.rolled = false;
+                nextButton.setText("Next");
+                for (Node child : dicePane.getChildren()) {
+                    if (child instanceof Die die) {
+                        die.setValue(0);
+                        die.setStatus("inactive");
+                        die.setViewport(new Rectangle2D(0,0, SPRITE_SIZE, SPRITE_SIZE));
+                    }
+                }
+                if (playersList.indexOf(activePlayer) + 1 == nrOfPlayers){
+                    gameState.put(Constants.GAMEOVER, "true");
+                } else {
+                    resetGameStateForNextPlayer();
+                    Game.createStartingDice(this, activeGameMap);
+                }
             } else {
                 switch (activeGameCategory) {
                     case Constants.RUNNING: {
@@ -215,11 +233,25 @@ public class MainController {
         }
     }
 
+    private void resetGameStateForNextPlayer() {
+        Map<String, String> gameState = MainScene.getGameState();
+        int activePlayer = Integer.parseInt(gameState.get("activePlayer"));
+        gameState.put("activePlayer", String.valueOf(activePlayer + 1));
+        gameState.put(Constants.LASTACHIEVED, "0");
+        gameState.put("currentAttempt", "0");
+        gameState.put("round", "1");
+        gameState.put(Constants.THISROUNDSCORE, "0");
+        gameState.put(Constants.REMAININGREROLLS, "5");
+        gameState.put("currentHeigth", "10");
+    }
+
     //test method
     public void clickOnDie(MouseEvent mouseEvent){
-        Node clickedNode = mouseEvent.getPickResult().getIntersectedNode();
-        if (clickedNode instanceof Die die){
-            die.setStatus(Constants.FOUL);
+        if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+            Node clickedNode = mouseEvent.getPickResult().getIntersectedNode();
+            if (clickedNode instanceof Die die) {
+                die.setStatus(Constants.FOUL);
+            }
         }
     }
 

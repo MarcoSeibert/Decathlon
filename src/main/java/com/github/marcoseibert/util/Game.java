@@ -25,7 +25,7 @@ public abstract class Game {
         }
     }
 
-    private void createStartingDice(MainController controller, Map<String, String> activeGameMap){
+    public static void createStartingDice(MainController controller, Map<String, String> activeGameMap){
         int initDice = 0;
         String category = activeGameMap.get(Constants.CATEGORY);
         // find initDice the number of dice at the beginning of the game
