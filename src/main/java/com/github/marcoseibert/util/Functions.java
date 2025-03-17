@@ -19,7 +19,7 @@ public class Functions {
     public static Cursor getCustomCursor(String direction) {
         Image cursorSprites = new Image("/images/cursorSpriteSheet.png");
         ImageView cursorView = new ImageView(cursorSprites);
-        if (Objects.equals(direction, "up")){
+        if (Objects.equals(direction, Constants.UP)){
             cursorView.setViewport(new Rectangle2D(0, 0, 32,32));
         } else {
             cursorView.setViewport(new Rectangle2D(32, 0, 32,32));

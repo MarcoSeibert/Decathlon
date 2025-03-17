@@ -99,7 +99,7 @@
             <Font name="Trebuchet MS" size="32.0" />
          </font>
       </Label>
-      <Label fx:id="upperLabel" layoutX="100.0" layoutY="123.0" text="Current score: 0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+      <Label fx:id="upperLabel" layoutX="100.0" layoutY="123.0" text="Current Score: 0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
          <font>
             <Font name="Trebuchet MS" size="32.0" />
          </font>

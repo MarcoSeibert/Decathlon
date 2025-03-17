@@ -20,6 +20,6 @@ public class RunningGame extends Game {
             getRollButton().setText("Roll");
         }
         //Disable roll button if no more rerolls
-        getRollButton().setDisable(Integer.parseInt(gameState.get("remainingRerolls")) == 0);
+        getRollButton().setDisable(Integer.parseInt(gameState.get(Constants.REMAININGREROLLS)) == 0);
     }
 }

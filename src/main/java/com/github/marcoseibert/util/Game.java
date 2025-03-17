@@ -1,6 +1,6 @@
 package com.github.marcoseibert.util;
-
 import com.github.marcoseibert.controller.MainController;
+
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 
@@ -27,7 +27,7 @@ public abstract class Game {
 
     private void createStartingDice(MainController controller, Map<String, String> activeGameMap){
         int initDice = 0;
-        String category = activeGameMap.get("category");
+        String category = activeGameMap.get(Constants.CATEGORY);
         // find initDice the number of dice at the beginning of the game
         switch (category){
             case Constants.RUNNING:

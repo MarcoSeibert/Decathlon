@@ -85,7 +85,7 @@ public class MainController {
                 int width = 512 / nrOfPlayers;
                 text.setPrefSize(width, 64);
                 text.setMaxSize(width, 64);
-                Cursor cursorUp = Functions.getCustomCursor("up");
+                Cursor cursorUp = Functions.getCustomCursor(Constants.UP);
                 text.setCursor(cursorUp);
                 switch (j) {
                     case 1 -> text.setText(playerList.get(i-1).getName());
@@ -133,19 +133,15 @@ public class MainController {
             if (!rolled) {
                 rolled = true;
             }
-            for (Node child:dicePane.getChildren()){
-                if (child instanceof Die die && die.isActive()){
-                    die.rollDie();
-                }
-            }
+            rollActiveDice();
             Map<String, String> gameState = MainScene.getGameState();
             Map<String, String> activeGameMap = MainScene.getActiveGameMap();
-            String activeGameCategory = activeGameMap.get("category");
+            String activeGameCategory = activeGameMap.get(Constants.CATEGORY);
             switch (activeGameCategory){
                 case Constants.RUNNING: {
                     if (Objects.equals(rollButton.getText(), "Reroll")){
-                        int newRemainingRerolls = Integer.parseInt(gameState.get("remainingRerolls")) - 1;
-                        gameState.put("remainingRerolls", String.valueOf(newRemainingRerolls));
+                        int newRemainingRerolls = Integer.parseInt(gameState.get(Constants.REMAININGREROLLS)) - 1;
+                        gameState.put(Constants.REMAININGREROLLS, String.valueOf(newRemainingRerolls));
                     }
                     break;
                 }
@@ -155,17 +151,29 @@ public class MainController {
         }
     }
 
+    private void rollActiveDice() {
+        Map<String, String> gameState = MainScene.getGameState();
+        gameState.put(Constants.THISROUNDSCORE, "0");
+        for (Node child:dicePane.getChildren()){
+            if (child instanceof Die die && die.isActive()){
+                die.rollDie();
+                int thisRoundScore = Integer.parseInt(gameState.get(Constants.THISROUNDSCORE));
+                gameState.put(Constants.THISROUNDSCORE, String.valueOf(thisRoundScore + die.getValue()));
+            }
+        }
+    }
+
     // Change cursor upon clicking the roll button
     public void setCursorDown(MouseEvent mouseEvent) {
         if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-            Cursor cursorDown = Functions.getCustomCursor("down");
+            Cursor cursorDown = Functions.getCustomCursor(Constants.DOWN);
             rollButton.setCursor(cursorDown);
         }
     }
 
     public void setCursorUp(MouseEvent mouseEvent) {
         if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-            Cursor cursorUp = Functions.getCustomCursor("up");
+            Cursor cursorUp = Functions.getCustomCursor(Constants.UP);
             rollButton.setCursor(cursorUp);
         }
     }
@@ -173,6 +181,37 @@ public class MainController {
     public void clickNextButton(MouseEvent mouseEvent) {
         if (mouseEvent.getButton() == MouseButton.PRIMARY) {
             logger.debug("nextButton pressed");
+            Map<String, String> gameState = MainScene.getGameState();
+            Map<String, String> activeGameMap = MainScene.getActiveGameMap();
+            String activeGameCategory = activeGameMap.get(Constants.CATEGORY);
+
+            if (Objects.equals(nextButton.getText(), "Finish")){
+                Player activePlayer = MainScene.getPlayersList().get(Integer.parseInt(gameState.get("activePlayer")));
+                activePlayer.setPointForGame(Integer.parseInt(activeGameMap.get(Constants.GAMEID)), Integer.parseInt(gameState.get(Constants.LASTACHIEVED)) + Integer.parseInt(gameState.get(Constants.THISROUNDSCORE)));
+            } else {
+                switch (activeGameCategory) {
+                    case Constants.RUNNING: {
+                        for (Node child : dicePane.getChildren()) {
+                            if (child instanceof Die die && die.isActive()) {
+                                int prevScore = Integer.parseInt(gameState.get(Constants.LASTACHIEVED));
+                                gameState.put(Constants.LASTACHIEVED, String.valueOf(prevScore + die.getValue()));
+                                die.setStatus(Constants.GRAYED);
+                            } else if (child instanceof Die die && Objects.equals(die.getStatus(), Constants.INACTIVE)) {
+                                die.setStatus(Constants.ACTIVE);
+                            }
+                        }
+                        rollActiveDice();
+                        int maxRounds = Integer.parseInt(activeGameMap.get("groups"));
+                        int currentRound = Integer.parseInt(gameState.get("round"));
+                        gameState.put("round", String.valueOf(currentRound + 1));
+                        if (currentRound + 1  == maxRounds) {
+                            nextButton.setText("Finish");
+                        }
+                        break;
+                    }
+                    default:
+                }
+            }
         }
     }
 

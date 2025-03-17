@@ -23,6 +23,10 @@ public class Player {
         pointsMap.put(game, points);
     }
 
+    public Map<Integer, Integer> getPointsMap() {
+        return pointsMap;
+    }
+
     public int getTotalPoints() {
         totalPoints = 0;
         for (var game : pointsMap.entrySet()){

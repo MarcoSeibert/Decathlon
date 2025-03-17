@@ -1,5 +1,6 @@
 package com.github.marcoseibert.controller;
 import com.github.marcoseibert.MainScene;
+import com.github.marcoseibert.util.Constants;
 import com.github.marcoseibert.util.Functions;
 import com.github.marcoseibert.util.Player;
 
@@ -73,14 +74,14 @@ public class StartController {
     // Change cursor upon clicking the start button
     public void setCursorDown(MouseEvent mouseEvent) {
         if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-            Cursor cursorDown = Functions.getCustomCursor("down");
+            Cursor cursorDown = Functions.getCustomCursor(Constants.DOWN);
             startButton.setCursor(cursorDown);
         }
     }
     // Set custom cursor for text fields
     public void setCursorUp(MouseEvent mouseEvent) {
         GridPane gridPane = (GridPane) mouseEvent.getSource();
-        Cursor cursorUp = Functions.getCustomCursor("up");
+        Cursor cursorUp = Functions.getCustomCursor(Constants.UP);
         for (Node child:gridPane.getChildren()){
             if (child instanceof TextField textField){
                 textField.setCursor(cursorUp);

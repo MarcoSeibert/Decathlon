@@ -21,6 +21,13 @@ public final class Constants {
 
     //game state keys
     public static final String GAMEOVER = "gameOver";
+    public static final String REMAININGREROLLS = "remainingRerolls";
+    public static final String LASTACHIEVED = "lastAchieved";
+    public static final String THISROUNDSCORE = "thisRoundScore";
+
+    //misc
+    public static final String UP = "up";
+    public static final String DOWN = "down";
 
     private Constants(){
         throw new AssertionError();

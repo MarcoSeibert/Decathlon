@@ -1,4 +1,5 @@
 package com.github.marcoseibert;
+import com.github.marcoseibert.util.Constants;
 import com.github.marcoseibert.util.Functions;
 
 import javafx.application.Application;
@@ -22,7 +23,7 @@ public class StartScene extends Application {
         stageStart.show();
 
         // Set custom cursor
-        Cursor cursorUp = Functions.getCustomCursor("up");
+        Cursor cursorUp = Functions.getCustomCursor(Constants.UP);
         sceneStart.setCursor(cursorUp);
     }
 

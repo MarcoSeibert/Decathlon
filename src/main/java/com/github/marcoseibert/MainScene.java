@@ -44,7 +44,7 @@ public class MainScene {
     private static Game game;
     private static Map<String, String> activeGameMap;
 
-    private static int activeGameId = 0;
+    private static int activeGameId = -1;
 
     private MainScene(){
     }
@@ -62,7 +62,7 @@ public class MainScene {
         MainController controller = loaderMain.getController();
 
         // Set custom cursor
-        Cursor cursorUp = Functions.getCustomCursor("up");
+        Cursor cursorUp = Functions.getCustomCursor(Constants.UP);
         sceneMain.setCursor(cursorUp);
 
         createPlayerPointsMap(controller);
@@ -77,6 +77,7 @@ public class MainScene {
     private static Timeline getTimeLine(MainController controller) {
         Timeline runningTasks = new Timeline(new KeyFrame(Duration.millis(100), _ -> {
             if (Objects.equals(gameState.get(Constants.GAMEOVER), "true")) {
+                activeGameId++;
                 activeGameMap = gamesParameterMap.get(activeGameId);
                 if (logger.isInfoEnabled()){
                     logger.info("Starting new game: {}", activeGameMap.get(Constants.NAME));
@@ -99,14 +100,15 @@ public class MainScene {
     }
 
     private static void doBackgroundTasks(MainController controller){
-        // Update the total score of the players
+        // Update the scores of the players
         for (int i = 0; i < nrOfPlayers; i++){
             int totalScore = 0;
+            Player player = playersList.get(i);
+            Map<Integer, Integer> playerPointMap = player.getPointsMap();
             for (int j = 2; j < 12; j++){
-                try {
-                    totalScore += Integer.parseInt(playerPointsMap.get(i + 1).get(j).getText());
-                } catch (NumberFormatException e) {
-                    totalScore += 0;
+                if (playerPointMap.get(j-2) != null){
+                    int score = playerPointMap.get(j-2);
+                    playerPointsMap.get(i + 1).get(j).setText(String.valueOf(score));
                 }
             }
             playerPointsMap.get(i+1).get(12).setText(String.valueOf(totalScore));
@@ -144,16 +146,12 @@ public class MainScene {
         String totalScore = "0";
         for (Node child:controller.dicePane.getChildren()){
             if (child instanceof Die die && die.isActive()){
-                if (!Objects.equals(die.getStatus(), Constants.FOUL)){
-                    currentScore += die.getValue();
-                } else {
-                    currentScore -= die.getValue();
-                }
+                currentScore += die.getValue();
             }
         }
         switch (activeGameMap.get(Constants.CATEGORY)){
             case Constants.RUNNING:{
-                int previousRoundsScore = Integer.parseInt(MainScene.gameState.get("lastAchieved"));
+                int previousRoundsScore = Integer.parseInt(MainScene.gameState.get(Constants.LASTACHIEVED));
                 totalScore = String.valueOf(currentScore + previousRoundsScore);
                 break;
             }
@@ -169,7 +167,7 @@ public class MainScene {
     private static void updateRerollCount(GridPane dicePane) {
         for (Node child:dicePane.getChildren()){
             if (Objects.equals(child.getId(), "lowerLabel")){
-                ((Label) child).setText("Rerolls: " + gameState.get("remainingRerolls"));
+                ((Label) child).setText("Rerolls: " + gameState.get(Constants.REMAININGREROLLS));
             }
         }
     }
@@ -296,13 +294,13 @@ public class MainScene {
         gameState.put("activePlayer", "0");
         gameState.put(Constants.GAMEOVER, "true");
         gameState.put("score", "0");
-        gameState.put("lastAchieved", "0"); //previousRoundScore for running, lastHeight for jumping, lastDistance for throwing
+        gameState.put(Constants.LASTACHIEVED, "0"); //previousRoundScore for running, lastHeight for jumping, lastDistance for throwing
         gameState.put("nextTry", "false"); //nextRound for running, nextHeight for jumping
         gameState.put("currentAttempt", "0"); // for jumping, throwing and rest
         // Attributes for running games
-        gameState.put("round", "0");
-        gameState.put("thisRoundScore", "0");
-        gameState.put("remainingRerolls", "5");
+        gameState.put("round", "1");
+        gameState.put(Constants.THISROUNDSCORE, "0");
+        gameState.put(Constants.REMAININGREROLLS, "5");
         // Attributes for jumping games
         gameState.put("currentHeight", "10");
         // Attributes for throwing games

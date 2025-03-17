@@ -1,5 +1,4 @@
 package com.github.marcoseibert.util;
-
 import com.github.marcoseibert.controller.MainController;
 
 import java.util.Map;

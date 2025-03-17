@@ -1,13 +1,12 @@
 package com.github.marcoseibert.util;
-
 import com.github.marcoseibert.MainScene;
+
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-
 
 import java.util.Objects;
 import java.util.Random;
@@ -16,6 +15,7 @@ import java.util.Random;
 public class Die extends ImageView {
     private final Random ran = new Random();
     private String status = Constants.INACTIVE;
+    private boolean foul = false;
     int value = 1;
     private static final double SPRITE_SIZE = 128;
     private static final int ANIM_SPRITES = 8;
@@ -45,20 +45,23 @@ public class Die extends ImageView {
         this.value = result;
         String currentStatus = status;
         this.status = Constants.ACTIVE;
+
+        //Set foul value according to category
+        int foulValue;
+        if (Objects.equals(MainScene.getActiveGameMap().get(Constants.CATEGORY), Constants.RUNNING) && !Objects.equals(MainScene.getActiveGameMap().get(Constants.NAME), "110 m hurdles")){
+            foulValue = 6;
+        } else if (Objects.equals(MainScene.getActiveGameMap().get(Constants.NAME), "Pole Vault")) {
+            foulValue = 1;
+        } else foulValue = 0;
+        //Set foul status
+        this.foul = value == foulValue;
+
         for (long i=1; i < 20; i++){
             delay(25 * i, ()->incrementImage(frameProperty));
         }
         delay(500, ()-> {
             this.status = currentStatus;
             this.setViewport(new Rectangle2D((result - 1) * SPRITE_SIZE, 0, SPRITE_SIZE, SPRITE_SIZE));
-
-            //Set foul value according to category
-            int foulValue;
-            if (Objects.equals(MainScene.getActiveGameMap().get("category"), Constants.RUNNING) && !Objects.equals(MainScene.getActiveGameMap().get(Constants.NAME), "110 m hurdles")){
-                foulValue = 6;
-            } else if (Objects.equals(MainScene.getActiveGameMap().get(Constants.NAME), "Pole Vault")) {
-                foulValue = 1;
-            } else foulValue = 0;
 
             //Set foul status
             if (value == foulValue){
@@ -107,6 +110,14 @@ public class Die extends ImageView {
     }
 
     public int getValue() {
-        return value;
+        if (!this.foul) {
+            return value;
+        } else {
+            return -value;
+        }
+    }
+
+    public boolean isFoul() {
+        return foul;
     }
 }
